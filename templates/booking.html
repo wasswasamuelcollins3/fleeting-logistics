@@ -1,0 +1,115 @@
+{% extends 'base.html' %}
+
+{% block title %}Booking - Fleeting Logistics Company Limited{% endblock %}
+
+{% block content %}
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="card shadow">
+                    <div class="card-body p-5">
+                        <h1 class="text-center mb-4">Book Your Service</h1>
+                        
+                        {% if messages %}
+                            {% for message in messages %}
+                                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                                    {{ message }}
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+                        
+                        <form method="post" class="needs-validation" novalidate>
+                <form method="post" class="needs-validation" novalidate>
+                    {% csrf_token %}
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="service_type" class="form-label">Service Type</label>
+                            <select class="form-select" id="service_type" name="service_type" required>
+                                <option value="">Choose service type</option>
+                                <option value="cargo">Cargo</option>
+                                <option value="passenger">Passenger</option>
+                            </select>
+                            <div class="invalid-feedback">
+                                Please select a service type.
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="name" class="form-label">Full Name</label>
+                            <input type="text" class="form-control" id="name" name="name" required>
+                            <div class="invalid-feedback">
+                                Please provide your full name.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="phone" class="form-label">Phone Number</label>
+                            <input type="tel" class="form-control" id="phone" name="phone" required>
+                            <div class="invalid-feedback">
+                                Please provide your phone number.
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="email" class="form-label">Email Address</label>
+                            <input type="email" class="form-control" id="email" name="email" required>
+                            <div class="invalid-feedback">
+                                Please provide a valid email address.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="pickup_location" class="form-label">Pickup Location</label>
+                            <input type="text" class="form-control" id="pickup_location" name="pickup_location" required>
+                            <div class="invalid-feedback">
+                                Please provide pickup location.
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="destination" class="form-label">Destination</label>
+                            <input type="text" class="form-control" id="destination" name="destination" required>
+                            <div class="invalid-feedback">
+                                Please provide destination.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="date" class="form-label">Preferred Date</label>
+                        <input type="date" class="form-control" id="date" name="date" required>
+                        <div class="invalid-feedback">
+                            Please select a date.
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="message" class="form-label">Additional Message (Optional)</label>
+                        <textarea class="form-control" id="message" name="message" rows="4"></textarea>
+                    </div>
+                    <div class="text-center">
+                        <button type="submit" class="btn btn-submit">Submit Booking Request</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+// Bootstrap form validation
+(function () {
+  'use strict'
+  var forms = document.querySelectorAll('.needs-validation')
+  Array.prototype.slice.call(forms)
+    .forEach(function (form) {
+      form.addEventListener('submit', function (event) {
+        if (!form.checkValidity()) {
+          event.preventDefault()
+          event.stopPropagation()
+        }
+        form.classList.add('was-validated')
+      }, false)
+    })
+})()
+</script>
+{% endblock %}
