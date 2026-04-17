@@ -144,8 +144,8 @@ section {
 /* Footer */
 footer,
 footer.footer-section {
-    background: #e0f0ff;
-    color: #0f172a;
+    background: #000000;
+    color: #f8f9fa;
     padding: 4rem 0 2rem;
 }
 
@@ -159,7 +159,7 @@ footer h5 {
 }
 
 .footer-links a {
-    color: #adb5bd;
+    color: #e9ecef;
     text-decoration: none;
     transition: color 0.3s ease, transform 0.3s ease;
 }
@@ -171,7 +171,7 @@ footer h5 {
 
 .footer-section p,
 .footer-section .text-muted {
-    color: #ced4da;
+    color: #dee2e6;
 }
 
 .footer-section .social-icons a {
@@ -185,7 +185,7 @@ footer h5 {
 }
 
 .footer-divider {
-    border-color: rgba(255,255,255,0.12);
+    border-color: rgba(255,255,255,0.08);
 }
 
 @media (max-width: 767px) {
