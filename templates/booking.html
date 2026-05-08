@@ -6,10 +6,11 @@
 <section class="py-5 bg-light">
     <div class="container">
         <div class="row justify-content-center">
-            <div class="col-lg-8">
-                <div class="card shadow">
+            <div class="col-lg-10">
+                <div class="card shadow border-0">
                     <div class="card-body p-5">
-                        <h1 class="text-center mb-4">Book Your Service</h1>
+                        <h1 class="text-center mb-2 text-primary">Book Your Service</h1>
+                        <p class="text-center text-muted mb-4">Fill in the details below to get an instant quote</p>
                         
                         {% if messages %}
                             {% for message in messages %}
@@ -21,73 +22,135 @@
                         {% endif %}
                         
                         <form method="post" class="needs-validation" novalidate>
-                <form method="post" class="needs-validation" novalidate>
-                    {% csrf_token %}
+                            {% csrf_token %}
+                    
+                    <!-- Row 1: Service & Vehicle Type -->
                     <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label for="service_type" class="form-label">Service Type</label>
-                            <select class="form-select" id="service_type" name="service_type" required>
-                                <option value="">Choose service type</option>
-                                <option value="cargo">Cargo</option>
-                                <option value="passenger">Passenger</option>
+                        <div class="col-md-6 mb-4">
+                            <label for="service" class="form-label fw-bold">Service Type <span class="text-danger">*</span></label>
+                            <select class="form-select form-select-lg" id="service" name="service" required onchange="updateVehicleOptions()">
+                                <option value="">Choose service</option>
+                                {% for service in services %}
+                                <option value="{{ service.id }}">{{ service.name }}</option>
+                                {% endfor %}
                             </select>
                             <div class="invalid-feedback">
-                                Please select a service type.
+                                Please select a service.
                             </div>
                         </div>
-                        <div class="col-md-6 mb-3">
-                            <label for="name" class="form-label">Full Name</label>
-                            <input type="text" class="form-control" id="name" name="name" required>
+                        <div class="col-md-6 mb-4">
+                            <label for="vehicle" class="form-label fw-bold">Vehicle Type <span class="text-danger">*</span></label>
+                            <select class="form-select form-select-lg" id="vehicle" name="vehicle" required onchange="calculatePrice()">
+                                <option value="">Select vehicle</option>
+                                <option value="van">Van (2 Tons)</option>
+                                <option value="truck">Truck (5 Tons)</option>
+                                <option value="cargo">Large Cargo (10 Tons)</option>
+                                <option value="bus">Bus (35 Seater)</option>
+                                <option value="car">Private Car</option>
+                            </select>
+                            <div class="invalid-feedback">
+                                Please select a vehicle.
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Row 2: Name & Phone -->
+                    <div class="row">
+                        <div class="col-md-6 mb-4">
+                            <label for="name" class="form-label fw-bold">Full Name <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control form-control-lg" id="name" name="name" required>
                             <div class="invalid-feedback">
                                 Please provide your full name.
                             </div>
                         </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label for="phone" class="form-label">Phone Number</label>
-                            <input type="tel" class="form-control" id="phone" name="phone" required>
+                        <div class="col-md-6 mb-4">
+                            <label for="phone" class="form-label fw-bold">Phone Number <span class="text-danger">*</span></label>
+                            <input type="tel" class="form-control form-control-lg" id="phone" name="phone" required>
                             <div class="invalid-feedback">
                                 Please provide your phone number.
                             </div>
                         </div>
-                        <div class="col-md-6 mb-3">
-                            <label for="email" class="form-label">Email Address</label>
-                            <input type="email" class="form-control" id="email" name="email" required>
+                    </div>
+
+                    <!-- Row 3: Email -->
+                    <div class="row">
+                        <div class="col-md-12 mb-4">
+                            <label for="email" class="form-label fw-bold">Email Address <span class="text-danger">*</span></label>
+                            <input type="email" class="form-control form-control-lg" id="email" name="email" required>
                             <div class="invalid-feedback">
                                 Please provide a valid email address.
                             </div>
                         </div>
                     </div>
+
+                    <!-- Row 4: Locations -->
                     <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label for="pickup_location" class="form-label">Pickup Location</label>
-                            <input type="text" class="form-control" id="pickup_location" name="pickup_location" required>
+                        <div class="col-md-6 mb-4">
+                            <label for="pickup_location" class="form-label fw-bold">Pickup Location <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control form-control-lg" id="pickup_location" name="pickup_location" placeholder="Enter pickup address" required>
                             <div class="invalid-feedback">
                                 Please provide pickup location.
                             </div>
                         </div>
-                        <div class="col-md-6 mb-3">
-                            <label for="destination" class="form-label">Destination</label>
-                            <input type="text" class="form-control" id="destination" name="destination" required>
+                        <div class="col-md-6 mb-4">
+                            <label for="destination" class="form-label fw-bold">Destination <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control form-control-lg" id="destination" name="destination" placeholder="Enter destination address" required>
                             <div class="invalid-feedback">
                                 Please provide destination.
                             </div>
                         </div>
                     </div>
-                    <div class="mb-3">
-                        <label for="date" class="form-label">Preferred Date</label>
-                        <input type="date" class="form-control" id="date" name="date" required>
-                        <div class="invalid-feedback">
-                            Please select a date.
+
+                    <!-- Row 5: Date & Time -->
+                    <div class="row">
+                        <div class="col-md-6 mb-4">
+                            <label for="date" class="form-label fw-bold">Preferred Date <span class="text-danger">*</span></label>
+                            <input type="date" class="form-control form-control-lg" id="date" name="date" required onchange="calculatePrice()">
+                            <div class="invalid-feedback">
+                                Please select a date.
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-4">
+                            <label for="time" class="form-label fw-bold">Preferred Time <span class="text-danger">*</span></label>
+                            <input type="time" class="form-control form-control-lg" id="time" name="time" required>
+                            <div class="invalid-feedback">
+                                Please select a time.
+                            </div>
                         </div>
                     </div>
-                    <div class="mb-3">
-                        <label for="message" class="form-label">Additional Message (Optional)</label>
-                        <textarea class="form-control" id="message" name="message" rows="4"></textarea>
+
+                    <!-- Row 6: Additional Message -->
+                    <div class="mb-4">
+                        <label for="message" class="form-label fw-bold">Additional Message (Optional)</label>
+                        <textarea class="form-control" id="message" name="message" rows="3" placeholder="Any special instructions or comments..."></textarea>
                     </div>
+
+                    <!-- Price Calculator Card -->
+                    <div class="card bg-primary bg-opacity-10 border-primary mb-4">
+                        <div class="card-body">
+                            <div class="row text-center">
+                                <div class="col-md-4">
+                                    <p class="text-muted mb-1">Estimated Distance</p>
+                                    <h4 class="text-primary mb-0" id="distance">-- km</h4>
+                                </div>
+                                <div class="col-md-4">
+                                    <p class="text-muted mb-1">Vehicle Rate</p>
+                                    <h4 class="text-primary mb-0" id="rate">-- /km</h4>
+                                </div>
+                                <div class="col-md-4">
+                                    <p class="text-muted mb-1 fw-bold">Estimated Cost</p>
+                                    <h3 class="text-success mb-0" id="totalPrice">UGX 0</h3>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Submit Button -->
                     <div class="text-center">
-                        <button type="submit" class="btn btn-submit">Submit Booking Request</button>
+                        <button type="submit" class="btn btn-lg btn-submit rounded-pill px-5">
+                            <i class="fas fa-check-circle me-2"></i>Confirm Booking
+                        </button>
+                        <p class="text-muted mt-3 small">Need help? <a href="https://wa.me/256752276350?text=Hello%20Fleeting%20Logistics%2C%20I%20need%20assistance%20with%20booking" target="_blank" class="text-success fw-bold"><i class="fab fa-whatsapp"></i> Chat on WhatsApp</a></p>
                     </div>
                 </form>
             </div>
@@ -111,5 +174,54 @@
       }, false)
     })
 })()
+
+// Vehicle pricing rates (per km)
+const vehicleRates = {
+  'van': 2500,
+  'truck': 4000,
+  'cargo': 5500,
+  'bus': 3500,
+  'car': 2000
+}
+
+// Calculate estimated price based on vehicle type and distance
+function calculatePrice() {
+  const vehicle = document.getElementById('vehicle').value;
+  const date = document.getElementById('date').value;
+  
+  if (!vehicle || !date) {
+    document.getElementById('totalPrice').textContent = 'UGX 0';
+    document.getElementById('rate').textContent = '-- /km';
+    document.getElementById('distance').textContent = '-- km';
+    return;
+  }
+  
+  // Simulate distance calculation (normally would use Google Maps API)
+  const estimatedDistance = Math.floor(Math.random() * 50) + 10; // Random 10-60 km for demo
+  const rate = vehicleRates[vehicle];
+  const basePrice = estimatedDistance * rate;
+  
+  // Add 10% surcharge if booking is for weekend
+  const bookingDate = new Date(date);
+  const dayOfWeek = bookingDate.getDay();
+  const isWeekend = dayOfWeek === 5 || dayOfWeek === 6;
+  const surcharge = isWeekend ? basePrice * 0.1 : 0;
+  const totalPrice = basePrice + surcharge;
+  
+  // Update display
+  document.getElementById('distance').textContent = estimatedDistance + ' km';
+  document.getElementById('rate').textContent = 'UGX ' + rate.toLocaleString() + ' /km';
+  document.getElementById('totalPrice').textContent = 'UGX ' + Math.round(totalPrice).toLocaleString();
+}
+
+// Update vehicle options based on service
+function updateVehicleOptions() {
+  const service = document.getElementById('service').value;
+  // Service handling can be extended based on your service types
+  calculatePrice();
+}
+
+// Set minimum date to today
+document.getElementById('date').min = new Date().toISOString().split('T')[0];
 </script>
 {% endblock %}

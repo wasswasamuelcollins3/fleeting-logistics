@@ -143,27 +143,33 @@ section {
 
 /* Footer */
 footer {
-    background: linear-gradient(135deg, #343a40, #495057);
-    color: white;
-    padding: 3rem 0 1rem;
+    background: linear-gradient(135deg, #1F2937 0%, #374151 50%, #6B7280 100%);
+    color: #ffffff;
+    padding: 5rem 0 3rem;
 }
 
 footer h5 {
     font-weight: 600;
     margin-bottom: 1.5rem;
+    color: #ffffff;
 }
 
 footer a {
-    color: #adb5bd;
+    color: #ffffff;
     text-decoration: none;
     transition: color 0.3s ease;
 }
 
-footer a:hover {
-    color: white;
+footer p,
+footer .text-muted,
+.footer-section p,
+.footer-section .text-muted {
+    color: #ffffff !important;
+    font-size: 1.05rem;
+    font-weight: 500;
+    line-height: 1.8;
+    letter-spacing: 0.3px;
 }
-
-/* Animations */
 .fade-in {
     opacity: 0;
     animation: fadeInUp 1s ease-out forwards;

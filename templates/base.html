@@ -12,7 +12,9 @@
 <body>
     <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm sticky-top">
         <div class="container">
-            <a class="navbar-brand fw-bold text-primary" href="{% url 'home' %}">Fleeting Logistics</a>
+            <a class="navbar-brand d-flex align-items-center" href="{% url 'home' %}">
+                <span class="visually-hidden">Fleeting Logistics</span>
+            </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
@@ -27,9 +29,26 @@
                     <li class="nav-item">
                         <a class="nav-link {% if request.resolver_match.url_name == 'services' %}active{% endif %}" href="{% url 'services' %}">Services</a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link {% if request.resolver_match.url_name == 'booking' %}active{% endif %}" href="{% url 'booking' %}">Booking</a>
-                    </li>
+                    {% if user.is_authenticated %}
+                        <li class="nav-item">
+                            <a class="nav-link {% if request.resolver_match.url_name == 'booking' %}active{% endif %}" href="{% url 'booking' %}">Booking</a>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
+                                {{ user.username }}
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="{% url 'logout' %}">Logout</a></li>
+                            </ul>
+                        </li>
+                    {% else %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'login' %}">Login</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'register' %}">Register</a>
+                        </li>
+                    {% endif %}
                     <li class="nav-item">
                         <a class="nav-link {% if request.resolver_match.url_name == 'contact' %}active{% endif %}" href="{% url 'contact' %}">Contact</a>
                     </li>
@@ -61,11 +80,11 @@
                 </div>
                 <div class="col-lg-4 col-md-12">
                     <h5 class="mb-3 text-white">Contact Info</h5>
-                    <p class="text-muted mb-2"><i class="fas fa-phone me-2"></i>+256 768 383 164</p>
+                    <p class="text-muted mb-2"><i class="fas fa-phone me-2"></i>+256 752276350</p>
                     <p class="text-muted mb-3"><i class="fas fa-envelope me-2"></i>Revolutionnyz@protonmail.com</p>
                     <div class="social-icons mt-2">
                         <a href="#" class="me-3"><i class="fab fa-facebook fa-lg"></i></a>
-                        <a href="#" class="me-3"><i class="fab fa-whatsapp fa-lg"></i></a>
+                        <a href="https://wa.me/256768383164" class="me-3"><i class="fab fa-whatsapp fa-lg"></i></a>
                         <a href="#" class="me-3"><i class="fab fa-instagram fa-lg"></i></a>
                     </div>
                 </div>
@@ -81,9 +100,11 @@
     <script src="https://kit.fontawesome.com/a076d05399.js"></script>
 
     <!-- WhatsApp Floating Button -->
-    <a href="https://wa.me/256XXXXXXXXX?text=Hello%20Fleeting%20Logistics%2C%20I%20would%20like%20to%20book%20a%20service." 
+    <a href="https://wa.me/256752276350?text=Hello%20Fleeting%20Logistics%2C%20I%20would%20like%20to%20book%20a%20service." 
        class="whatsapp-float" target="_blank" title="Chat with us on WhatsApp">
         <i class="fab fa-whatsapp"></i>
+        <span class="whatsapp-badge">1</span>
     </a>
+    <div class="whatsapp-tooltip">Message us!</div>
 </body>
 </html>
