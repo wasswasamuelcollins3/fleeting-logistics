@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: fleeting-logistics
+    env: python
+    plan: starter
+    runtime: python-3.12.7
+    buildCommand: >
+      python -m pip install --upgrade pip &&
+      pip install -r requirements.txt &&
+      python manage.py migrate --noinput &&
+      python manage.py collectstatic --noinput
+    startCommand: gunicorn fleeting_logistics.wsgi:application
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.7
+      - key: DISABLE_COLLECTSTATIC
+        value: "false"
