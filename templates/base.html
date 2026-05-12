@@ -1,110 +1,282 @@
 <!DOCTYPE html>
 <html lang="en">
+{% load static %}
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Fleeting Logistics Company Limited{% endblock %}</title>
-    {% load static %}
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <meta name="description" content="Fleeting Logistics - Professional cargo, passenger transport, and express delivery services across East Africa.">
+    <meta name="keywords" content="logistics, cargo transport, passenger transport, express delivery, Uganda, East Africa">
+    <meta name="author" content="Fleeting Logistics Company Limited">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://fleetinglogistics.com/">
+    <meta property="og:title" content="Fleeting Logistics - Professional Transport Solutions">
+    <meta property="og:description" content="Leading logistics company providing cargo transport, passenger services, and express delivery across East Africa.">
+    <meta property="og:image" content="{% static 'img/og-image.jpg' %}">
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://fleetinglogistics.com/">
+    <meta property="twitter:title" content="Fleeting Logistics - Professional Transport Solutions">
+    <meta property="twitter:description" content="Leading logistics company providing cargo transport, passenger services, and express delivery across East Africa.">
+    <meta property="twitter:image" content="{% static 'img/twitter-image.jpg' %}">
+
+    <title>{% block title %}Fleeting Logistics - Professional Transport Solutions{% endblock %}</title>
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="{% static 'img/favicon.ico' %}">
+    <link rel="apple-touch-icon" sizes="180x180" href="{% static 'img/apple-touch-icon.png' %}">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Bootstrap 5.3 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+
+    <!-- Font Awesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer">
+
+    <!-- Custom CSS -->
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
+
+    {% block extra_head %}{% endblock %}
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm sticky-top">
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-lg sticky-top">
         <div class="container">
             <a class="navbar-brand d-flex align-items-center" href="{% url 'home' %}">
-                <span class="visually-hidden">Fleeting Logistics</span>
+                <i class="fas fa-truck-moving text-warning me-2 fs-4"></i>
+                <div>
+                    <div class="fw-bold fs-5">Fleeting Logistics</div>
+                    <small class="text-light opacity-75">Professional Transport Solutions</small>
+                </div>
             </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+
+            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
+
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item">
-                        <a class="nav-link {% if request.resolver_match.url_name == 'home' %}active{% endif %}" href="{% url 'home' %}">Home</a>
+                        <a class="nav-link {% if request.resolver_match.url_name == 'home' %}active{% endif %}" href="{% url 'home' %}">
+                            <i class="fas fa-home me-1"></i>Home
+                        </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link {% if request.resolver_match.url_name == 'about' %}active{% endif %}" href="{% url 'about' %}">About</a>
+                        <a class="nav-link {% if request.resolver_match.url_name == 'about' %}active{% endif %}" href="{% url 'about' %}">
+                            <i class="fas fa-info-circle me-1"></i>About
+                        </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link {% if request.resolver_match.url_name == 'services' %}active{% endif %}" href="{% url 'services' %}">Services</a>
+                        <a class="nav-link {% if request.resolver_match.url_name == 'services' %}active{% endif %}" href="{% url 'services' %}">
+                            <i class="fas fa-concierge-bell me-1"></i>Services
+                        </a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.resolver_match.url_name == 'tracking' %}active{% endif %}" href="{% url 'tracking' %}">
+                            <i class="fas fa-search me-1"></i>Track Shipment
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.resolver_match.url_name == 'contact' %}active{% endif %}" href="{% url 'contact' %}">
+                            <i class="fas fa-envelope me-1"></i>Contact
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.resolver_match.url_name == 'booking' %}active{% endif %}" href="{% url 'booking' %}">
+                            <i class="fas fa-calendar-check me-1"></i>Book Now
+                        </a>
+                    </li>
+
                     {% if user.is_authenticated %}
-                        <li class="nav-item">
-                            <a class="nav-link {% if request.resolver_match.url_name == 'booking' %}active{% endif %}" href="{% url 'booking' %}">Booking</a>
-                        </li>
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
-                                {{ user.username }}
+                                <i class="fas fa-user me-1"></i>{{ user.first_name|default:user.username }}
                             </a>
                             <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="{% url 'logout' %}">Logout</a></li>
+                                <li><a class="dropdown-item" href="{% url 'dashboard' %}">
+                                    <i class="fas fa-tachometer-alt me-2"></i>Dashboard
+                                </a></li>
+                                <li><a class="dropdown-item" href="{% url 'profile' %}">
+                                    <i class="fas fa-user-edit me-2"></i>Profile
+                                </a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="{% url 'account_logout' %}">
+                                    <i class="fas fa-sign-out-alt me-2"></i>Logout
+                                </a></li>
                             </ul>
                         </li>
                     {% else %}
                         <li class="nav-item">
-                            <a class="nav-link" href="{% url 'login' %}">Login</a>
+                            <a class="nav-link" href="{% url 'account_login' %}">
+                                <i class="fas fa-sign-in-alt me-1"></i>Login
+                            </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="{% url 'register' %}">Register</a>
+                            <a class="btn btn-warning ms-2" href="{% url 'account_signup' %}">
+                                <i class="fas fa-user-plus me-1"></i>Sign Up
+                            </a>
                         </li>
                     {% endif %}
-                    <li class="nav-item">
-                        <a class="nav-link {% if request.resolver_match.url_name == 'contact' %}active{% endif %}" href="{% url 'contact' %}">Contact</a>
-                    </li>
                 </ul>
             </div>
         </div>
     </nav>
 
+    <!-- Main Content -->
     <main>
         {% block content %}{% endblock %}
     </main>
 
-    <footer class="footer-section">
+    <!-- Footer -->
+    <footer class="bg-dark text-light py-5 mt-5">
         <div class="container">
-            <div class="row gy-4 gy-lg-0">
+            <div class="row g-4">
+                <!-- Company Info & Contact -->
                 <div class="col-lg-4 col-md-6">
-                    <h5 class="mb-3 text-white">Fleeting Logistics Company Limited</h5>
-                    <p class="text-muted">Fast, reliable logistics and comfortable transport solutions for cargo and passenger services.</p>
-                </div>
-                <div class="col-lg-4 col-md-6">
-                    <h5 class="mb-3 text-white">Quick Links</h5>
-                    <ul class="list-unstyled footer-links">
-                        <li><a href="{% url 'home' %}">Home</a></li>
-                        <li><a href="{% url 'about' %}">About</a></li>
-                        <li><a href="{% url 'services' %}">Services</a></li>
-                        <li><a href="{% url 'booking' %}">Booking</a></li>
-                        <li><a href="{% url 'contact' %}">Contact</a></li>
-                    </ul>
-                </div>
-                <div class="col-lg-4 col-md-12">
-                    <h5 class="mb-3 text-white">Contact Info</h5>
-                    <p class="text-muted mb-2"><i class="fas fa-phone me-2"></i>+256 752276350</p>
-                    <p class="text-muted mb-3"><i class="fas fa-envelope me-2"></i>Revolutionnyz@protonmail.com</p>
-                    <div class="social-icons mt-2">
-                        <a href="#" class="me-3"><i class="fab fa-facebook fa-lg"></i></a>
-                        <a href="https://wa.me/256768383164" class="me-3"><i class="fab fa-whatsapp fa-lg"></i></a>
-                        <a href="#" class="me-3"><i class="fab fa-instagram fa-lg"></i></a>
+                    <div class="d-flex align-items-center mb-3">
+                        <i class="fas fa-truck-moving text-warning me-2 fs-4"></i>
+                        <div>
+                            <h5 class="mb-0">Fleeting Logistics</h5>
+                            <small class="text-muted">Professional Transport Solutions</small>
+                        </div>
+                    </div>
+                    <p class="mb-3">Leading logistics company providing comprehensive cargo transport, passenger services, and express delivery solutions across East Africa.</p>
+                    <div class="mb-3">
+                        <div class="d-flex align-items-center mb-2">
+                            <i class="fas fa-phone text-primary me-3"></i>
+                            <div>
+                                <strong>Phone</strong><br>
+                                <a href="tel:+256768383164" class="text-light text-decoration-none">+256 768 383 164</a>
+                            </div>
+                        </div>
+                        <div class="d-flex align-items-center">
+                            <i class="fas fa-envelope text-primary me-3"></i>
+                            <div>
+                                <strong>Email</strong><br>
+                                <a href="mailto:info@fleetinglogistics.com" class="text-light text-decoration-none">info@fleetinglogistics.com</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="d-flex">
+                        <a href="https://wa.me/256768383164" class="btn btn-success btn-sm me-2" target="_blank">
+                            <i class="fab fa-whatsapp me-1"></i>WhatsApp
+                        </a>
+                        <a href="tel:+256768383164" class="btn btn-outline-light btn-sm">
+                            <i class="fas fa-phone me-1"></i>Call Now
+                        </a>
                     </div>
                 </div>
+
+                <!-- Quick Links -->
+                <div class="col-lg-4 col-md-6">
+                    <h6 class="text-warning mb-3">Quick Links</h6>
+                    <ul class="list-unstyled">
+                        <li class="mb-2"><a href="{% url 'home' %}" class="quick-link">Home</a></li>
+                        <li class="mb-2"><a href="{% url 'about' %}" class="quick-link">About Us</a></li>
+                        <li class="mb-2"><a href="{% url 'services' %}" class="quick-link">Services</a></li>
+                        <li class="mb-2"><a href="{% url 'tracking' %}" class="quick-link">Track Shipment</a></li>
+                        <li class="mb-2"><a href="{% url 'booking' %}" class="quick-link">Book Now</a></li>
+                        <li class="mb-2"><a href="{% url 'contact' %}" class="quick-link">Contact</a></li>
+                    </ul>
+                </div>
+
+                <!-- Services -->
+                <div class="col-lg-4 col-md-6">
+                    <h6 class="text-warning mb-3">Our Services</h6>
+                    <ul class="list-unstyled">
+                        <li class="mb-2"><i class="fas fa-truck text-primary me-2"></i>Cargo Transport</li>
+                        <li class="mb-2"><i class="fas fa-users text-primary me-2"></i>Passenger Transport</li>
+                        <li class="mb-2"><i class="fas fa-shipping-fast text-primary me-2"></i>Express Delivery</li>
+                        <li class="mb-2"><i class="fas fa-warehouse text-primary me-2"></i>Warehousing</li>
+                        <li class="mb-2"><i class="fas fa-file-contract text-primary me-2"></i>Customs Clearance</li>
+                    </ul>
+                </div>
             </div>
-            <hr class="footer-divider my-4">
-            <div class="text-center">
-                <p class="mb-0 text-muted">© 2026 Fleeting Logistics Company Limited. All rights reserved.</p>
+
+            <!-- Social Media & Copyright -->
+            <hr class="my-4">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <p class="mb-0">&copy; 2026 Fleeting Logistics Company Limited. All rights reserved.</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <div class="d-flex justify-content-md-end">
+                        <a href="#" class="text-light me-3" title="Facebook">
+                            <i class="fab fa-facebook-f"></i>
+                        </a>
+                        <a href="#" class="text-light me-3" title="Twitter">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                        <a href="#" class="text-light me-3" title="LinkedIn">
+                            <i class="fab fa-linkedin-in"></i>
+                        </a>
+                        <a href="#" class="text-light me-3" title="Instagram">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                        <a href="https://wa.me/256768383164" class="text-light" title="WhatsApp" target="_blank">
+                            <i class="fab fa-whatsapp"></i>
+                        </a>
+                    </div>
+                </div>
             </div>
         </div>
     </footer>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://kit.fontawesome.com/a076d05399.js"></script>
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script>
+
+    <!-- Custom JS -->
+    <script src="{% static 'js/main.js' %}"></script>
+
+    {% block extra_js %}{% endblock %}
+
+    <script>
+        // Back to top button
+        window.addEventListener('scroll', function() {
+            const backToTop = document.getElementById('backToTop');
+            if (backToTop) {
+                if (window.pageYOffset > 300) {
+                    backToTop.style.display = 'block';
+                } else {
+                    backToTop.style.display = 'none';
+                }
+            }
+        });
+
+        const backToTopBtn = document.getElementById('backToTop');
+        if (backToTopBtn) {
+            backToTopBtn.addEventListener('click', function() {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            });
+        }
+
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>
 
     <!-- WhatsApp Floating Button -->
-    <a href="https://wa.me/256752276350?text=Hello%20Fleeting%20Logistics%2C%20I%20would%20like%20to%20book%20a%20service." 
+    <a href="https://wa.me/256XXXXXXXXX?text=Hello%20Fleeting%20Logistics%2C%20I%20would%20like%20to%20book%20a%20service." 
        class="whatsapp-float" target="_blank" title="Chat with us on WhatsApp">
         <i class="fab fa-whatsapp"></i>
-        <span class="whatsapp-badge">1</span>
     </a>
-    <div class="whatsapp-tooltip">Message us!</div>
 </body>
 </html>

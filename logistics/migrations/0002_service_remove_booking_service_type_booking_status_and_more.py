@@ -18,9 +18,15 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('name', models.CharField(max_length=100)),
+                ('service_type', models.CharField(choices=[('cargo', 'Cargo Transport'), ('passenger', 'Passenger Transport'), ('express', 'Express Delivery'), ('warehousing', 'Warehousing'), ('customs', 'Customs Clearance')], default='cargo', max_length=20)),
                 ('description', models.TextField()),
+                ('price_per_kg', models.DecimalField(blank=True, decimal_places=2, max_digits=10, null=True)),
+                ('base_price', models.DecimalField(decimal_places=2, default=0, max_digits=10)),
+                ('estimated_delivery_days', models.IntegerField(default=3)),
                 ('is_active', models.BooleanField(default=True)),
+                ('icon', models.CharField(blank=True, help_text='FontAwesome icon class', max_length=50)),
                 ('created_at', models.DateTimeField(auto_now_add=True)),
+                ('updated_at', models.DateTimeField(auto_now=True)),
             ],
         ),
         migrations.RemoveField(

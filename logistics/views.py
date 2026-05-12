@@ -5,6 +5,7 @@ from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.core.mail import send_mail
 from django.conf import settings
+from django.db.models import Q
 from .models import Booking, Service
 import urllib.parse
 
@@ -41,7 +42,45 @@ def contact(request):
     return render(request, 'contact.html')
 
 @login_required
+def dashboard(request):
+    return render(request, 'dashboard.html')
+
+@login_required
+def profile(request):
+    if request.method == 'POST':
+        first_name = request.POST.get('first_name', '').strip()
+        last_name = request.POST.get('last_name', '').strip()
+        email = request.POST.get('email', '').strip()
+
+        request.user.first_name = first_name
+        request.user.last_name = last_name
+        request.user.email = email
+        request.user.save()
+        messages.success(request, 'Your profile has been updated successfully.')
+        return redirect('profile')
+
+    return render(request, 'profile.html')
+
+def tracking(request):
+    query = request.GET.get('query', '').strip()
+    results = []
+    if query:
+        q = Q(name__icontains=query) | Q(phone__icontains=query) | Q(email__icontains=query)
+        if query.isdigit():
+            q |= Q(pk=query)
+        results = Booking.objects.filter(q).order_by('-created_at')
+        if not results:
+            messages.warning(request, 'No bookings or shipments were found for that search term.')
+
+    return render(request, 'tracking.html', {
+        'results': results,
+        'query': query,
+    })
+
 def booking(request):
+    quote_mode = request.GET.get('quote') == 'true'
+    services = Service.objects.filter(is_active=True)
+    
     if request.method == 'POST':
         service_id = request.POST.get('service')
         name = request.POST.get('name')
@@ -50,7 +89,11 @@ def booking(request):
         pickup_location = request.POST.get('pickup_location')
         destination = request.POST.get('destination')
         date = request.POST.get('date')
+        time = request.POST.get('time')
         message = request.POST.get('message')
+        estimated_distance = request.POST.get('estimated_distance')
+        vehicle_rate = request.POST.get('vehicle_rate')
+        estimated_cost = request.POST.get('estimated_cost')
         
         try:
             service = Service.objects.get(id=service_id)
@@ -60,7 +103,7 @@ def booking(request):
         
         # Save booking to database
         booking = Booking.objects.create(
-            user=request.user,
+            user=request.user if request.user.is_authenticated else None,
             service=service,
             name=name,
             phone=phone,
@@ -68,6 +111,10 @@ def booking(request):
             pickup_location=pickup_location,
             destination=destination,
             date=date,
+            time=time,
+            estimated_distance=float(estimated_distance) if estimated_distance else None,
+            vehicle_rate=vehicle_rate if vehicle_rate else None,
+            estimated_cost=estimated_cost if estimated_cost else None,
             message=message
         )
         
@@ -152,7 +199,10 @@ Details: {message}"""
         return redirect(whatsapp_url)
     
     services = Service.objects.filter(is_active=True)
-    return render(request, 'booking.html', {'services': services})
+    return render(request, 'booking.html', {
+        'services': services,
+        'quote_mode': quote_mode
+    })
 
 def register(request):
     if request.method == 'POST':

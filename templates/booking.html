@@ -1,227 +1,348 @@
 {% extends 'base.html' %}
 
+{% load static %}
+
 {% block title %}Booking - Fleeting Logistics Company Limited{% endblock %}
 
 {% block content %}
 <section class="py-5 bg-light">
     <div class="container">
         <div class="row justify-content-center">
-            <div class="col-lg-10">
-                <div class="card shadow border-0">
+            <div class="col-lg-8">
+                <div class="card shadow">
                     <div class="card-body p-5">
-                        <h1 class="text-center mb-2 text-primary">Book Your Service</h1>
-                        <p class="text-center text-muted mb-4">Fill in the details below to get an instant quote</p>
+                        <h1 class="text-center mb-4" id="pageTitle">Book Your Service</h1>
                         
-                        {% if messages %}
-                            {% for message in messages %}
-                                <div class="alert alert-success alert-dismissible fade show" role="alert">
-                                    {{ message }}
-                                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                                </div>
-                            {% endfor %}
+                        {% if quote_mode %}
+                            <div class="alert alert-info alert-dismissible fade show" role="alert">
+                                <i class="fas fa-info-circle me-2"></i>
+                                <strong>Get a Quote:</strong> Enter your details below to see an estimated price for your trip.
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                            </div>
                         {% endif %}
-                        
-                        <form method="post" class="needs-validation" novalidate>
+
+                        <!-- Booking Form -->
+                        <form id="bookingForm" method="post" class="needs-validation" novalidate>
                             {% csrf_token %}
-                    
-                    <!-- Row 1: Service & Vehicle Type -->
-                    <div class="row">
-                        <div class="col-md-6 mb-4">
-                            <label for="service" class="form-label fw-bold">Service Type <span class="text-danger">*</span></label>
-                            <select class="form-select form-select-lg" id="service" name="service" required onchange="updateVehicleOptions()">
-                                <option value="">Choose service</option>
-                                {% for service in services %}
-                                <option value="{{ service.id }}">{{ service.name }}</option>
-                                {% endfor %}
-                            </select>
-                            <div class="invalid-feedback">
-                                Please select a service.
-                            </div>
-                        </div>
-                        <div class="col-md-6 mb-4">
-                            <label for="vehicle" class="form-label fw-bold">Vehicle Type <span class="text-danger">*</span></label>
-                            <select class="form-select form-select-lg" id="vehicle" name="vehicle" required onchange="calculatePrice()">
-                                <option value="">Select vehicle</option>
-                                <option value="van">Van (2 Tons)</option>
-                                <option value="truck">Truck (5 Tons)</option>
-                                <option value="cargo">Large Cargo (10 Tons)</option>
-                                <option value="bus">Bus (35 Seater)</option>
-                                <option value="car">Private Car</option>
-                            </select>
-                            <div class="invalid-feedback">
-                                Please select a vehicle.
-                            </div>
-                        </div>
-                    </div>
+                            
+                            <div class="row">
+                                <!-- Left Column: Form Inputs -->
+                                <div class="col-lg-7">
+                                    <h4 class="mb-3">Booking Details</h4>
+                                    
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <label for="service" class="form-label">Service <span class="text-danger">*</span></label>
+                                            <select class="form-select" id="service" name="service" required>
+                                                <option value="">Choose a service</option>
+                                                {% for service in services %}
+                                                    <option value="{{ service.id }}">{{ service.name }} (UGX {{ service.base_price }}/base)</option>
+                                                {% endfor %}
+                                            </select>
+                                            <div class="invalid-feedback">Please select a service.</div>
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label for="name" class="form-label">Full Name <span class="text-danger">*</span></label>
+                                            <input type="text" class="form-control" id="name" name="name" required>
+                                            <div class="invalid-feedback">Please provide your full name.</div>
+                                        </div>
+                                    </div>
 
-                    <!-- Row 2: Name & Phone -->
-                    <div class="row">
-                        <div class="col-md-6 mb-4">
-                            <label for="name" class="form-label fw-bold">Full Name <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control form-control-lg" id="name" name="name" required>
-                            <div class="invalid-feedback">
-                                Please provide your full name.
-                            </div>
-                        </div>
-                        <div class="col-md-6 mb-4">
-                            <label for="phone" class="form-label fw-bold">Phone Number <span class="text-danger">*</span></label>
-                            <input type="tel" class="form-control form-control-lg" id="phone" name="phone" required>
-                            <div class="invalid-feedback">
-                                Please provide your phone number.
-                            </div>
-                        </div>
-                    </div>
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <label for="phone" class="form-label">Phone Number <span class="text-danger">*</span></label>
+                                            <input type="tel" class="form-control" id="phone" name="phone" required>
+                                            <div class="invalid-feedback">Please provide your phone number.</div>
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label for="email" class="form-label">Email Address</label>
+                                            <input type="email" class="form-control" id="email" name="email">
+                                            <div class="invalid-feedback">Please provide a valid email address.</div>
+                                        </div>
+                                    </div>
 
-                    <!-- Row 3: Email -->
-                    <div class="row">
-                        <div class="col-md-12 mb-4">
-                            <label for="email" class="form-label fw-bold">Email Address <span class="text-danger">*</span></label>
-                            <input type="email" class="form-control form-control-lg" id="email" name="email" required>
-                            <div class="invalid-feedback">
-                                Please provide a valid email address.
-                            </div>
-                        </div>
-                    </div>
+                                    <hr class="my-4">
 
-                    <!-- Row 4: Locations -->
-                    <div class="row">
-                        <div class="col-md-6 mb-4">
-                            <label for="pickup_location" class="form-label fw-bold">Pickup Location <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control form-control-lg" id="pickup_location" name="pickup_location" placeholder="Enter pickup address" required>
-                            <div class="invalid-feedback">
-                                Please provide pickup location.
-                            </div>
-                        </div>
-                        <div class="col-md-6 mb-4">
-                            <label for="destination" class="form-label fw-bold">Destination <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control form-control-lg" id="destination" name="destination" placeholder="Enter destination address" required>
-                            <div class="invalid-feedback">
-                                Please provide destination.
-                            </div>
-                        </div>
-                    </div>
+                                    <h4 class="mb-3">Trip Details</h4>
 
-                    <!-- Row 5: Date & Time -->
-                    <div class="row">
-                        <div class="col-md-6 mb-4">
-                            <label for="date" class="form-label fw-bold">Preferred Date <span class="text-danger">*</span></label>
-                            <input type="date" class="form-control form-control-lg" id="date" name="date" required onchange="calculatePrice()">
-                            <div class="invalid-feedback">
-                                Please select a date.
-                            </div>
-                        </div>
-                        <div class="col-md-6 mb-4">
-                            <label for="time" class="form-label fw-bold">Preferred Time <span class="text-danger">*</span></label>
-                            <input type="time" class="form-control form-control-lg" id="time" name="time" required>
-                            <div class="invalid-feedback">
-                                Please select a time.
-                            </div>
-                        </div>
-                    </div>
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <label for="pickup_location" class="form-label">Pickup Location <span class="text-danger">*</span></label>
+                                            <input type="text" class="form-control" id="pickup_location" name="pickup_location" placeholder="Enter pickup address" required onchange="estimateDistanceAndCost()" onblur="estimateDistanceAndCost()">
+                                            <div class="invalid-feedback">Please provide pickup location.</div>
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label for="destination" class="form-label">Destination <span class="text-danger">*</span></label>
+                                            <input type="text" class="form-control" id="destination" name="destination" placeholder="Enter destination address" required onchange="estimateDistanceAndCost()" onblur="estimateDistanceAndCost()">
+                                            <div class="invalid-feedback">Please provide destination.</div>
+                                        </div>
+                                    </div>
 
-                    <!-- Row 6: Additional Message -->
-                    <div class="mb-4">
-                        <label for="message" class="form-label fw-bold">Additional Message (Optional)</label>
-                        <textarea class="form-control" id="message" name="message" rows="3" placeholder="Any special instructions or comments..."></textarea>
-                    </div>
+                                    <div id="distanceEstimationInfo" class="alert alert-info d-none mb-3" role="alert">
+                                        <i class="fas fa-map-marker-alt me-2"></i>
+                                        <span id="estimationStatus">Calculating distance...</span>
+                                    </div>
 
-                    <!-- Price Calculator Card -->
-                    <div class="card bg-primary bg-opacity-10 border-primary mb-4">
-                        <div class="card-body">
-                            <div class="row text-center">
-                                <div class="col-md-4">
-                                    <p class="text-muted mb-1">Estimated Distance</p>
-                                    <h4 class="text-primary mb-0" id="distance">-- km</h4>
+                                    <div class="row">
+                                        <div class="col-md-4 mb-3">
+                                            <label for="date" class="form-label">Preferred Date <span class="text-danger">*</span></label>
+                                            <input type="date" class="form-control" id="date" name="date" required>
+                                            <div class="invalid-feedback">Please select a date.</div>
+                                        </div>
+                                        <div class="col-md-4 mb-3">
+                                            <label for="time" class="form-label">Preferred Time <span class="text-danger">*</span></label>
+                                            <input type="time" class="form-control" id="time" name="time" required>
+                                            <div class="invalid-feedback">Please select a time.</div>
+                                        </div>
+                                        <div class="col-md-4 mb-3">
+                                            <label for="estimated_distance" class="form-label">Est. Distance (km) <span class="text-danger">*</span></label>
+                                            <input type="number" class="form-control" id="estimated_distance" name="estimated_distance" step="0.1" placeholder="Auto-calculated" required readonly>
+                                            <div class="invalid-feedback">Distance will be calculated automatically.</div>
+                                        </div>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label for="message" class="form-label">Additional Message (Optional)</label>
+                                        <textarea class="form-control" id="message" name="message" rows="3" placeholder="Any special instructions or notes..."></textarea>
+                                    </div>
                                 </div>
-                                <div class="col-md-4">
-                                    <p class="text-muted mb-1">Vehicle Rate</p>
-                                    <h4 class="text-primary mb-0" id="rate">-- /km</h4>
-                                </div>
-                                <div class="col-md-4">
-                                    <p class="text-muted mb-1 fw-bold">Estimated Cost</p>
-                                    <h3 class="text-success mb-0" id="totalPrice">UGX 0</h3>
+
+                                <!-- Right Column: Cost Estimation Summary -->
+                                <div class="col-lg-5">
+                                    <div class="card border-primary sticky-top" style="top: 20px;">
+                                        <div class="card-header bg-primary text-white">
+                                            <h5 class="mb-0"><i class="fas fa-receipt me-2"></i>Estimated Cost</h5>
+                                        </div>
+                                        <div class="card-body">
+                                            <div id="costSummaryContent" class="d-none">
+                                                <div class="mb-3">
+                                                    <p class="mb-2"><strong>Service:</strong></p>
+                                                    <p class="text-muted"><span id="costService">-</span></p>
+                                                </div>
+
+                                                <div class="mb-3">
+                                                    <p class="mb-2"><strong>Route:</strong></p>
+                                                    <p class="text-muted small">
+                                                        <i class="fas fa-map-pin"></i> <span id="costPickup">-</span><br>
+                                                        <i class="fas fa-flag"></i> <span id="costDestination">-</span>
+                                                    </p>
+                                                </div>
+
+                                                <hr>
+
+                                                <div class="mb-3">
+                                                    <p class="mb-2"><strong>Distance:</strong> <span id="costDistance">-</span> km</p>
+                                                    <p class="mb-2"><strong>Rate:</strong> UGX <span id="costRate">-</span>/km</p>
+                                                </div>
+
+                                                <hr>
+
+                                                <div class="bg-light p-3 rounded mb-3">
+                                                    <p class="text-muted small mb-2">Estimated Total Cost</p>
+                                                    <h3 class="text-success mb-0">UGX <span id="costTotal">0</span></h3>
+                                                </div>
+
+                                                <div class="alert alert-info small mb-0">
+                                                    <i class="fas fa-info-circle me-2"></i>
+                                                    This is an estimated cost. Final pricing may vary based on actual route and conditions.
+                                                </div>
+                                            </div>
+
+                                            <div id="costEmptyState" class="text-center py-4">
+                                                <i class="fas fa-calculator text-muted" style="font-size: 2rem;"></i>
+                                                <p class="text-muted mt-2 small">Enter pickup location and destination to see estimated cost</p>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    </div>
 
-                    <!-- Submit Button -->
-                    <div class="text-center">
-                        <button type="submit" class="btn btn-lg btn-submit rounded-pill px-5">
-                            <i class="fas fa-check-circle me-2"></i>Confirm Booking
-                        </button>
-                        <p class="text-muted mt-3 small">Need help? <a href="https://wa.me/256752276350?text=Hello%20Fleeting%20Logistics%2C%20I%20need%20assistance%20with%20booking" target="_blank" class="text-success fw-bold"><i class="fab fa-whatsapp"></i> Chat on WhatsApp</a></p>
+                            <hr class="my-4">
+
+                            <!-- Confirm Button -->
+                            <div class="text-center">
+                                {% if quote_mode %}
+                                    <a href="{% url 'booking' %}" class="btn btn-success btn-lg">
+                                        <i class="fas fa-shopping-cart me-2"></i>Book Now
+                                    </a>
+                                {% else %}
+                                    <button type="submit" class="btn btn-success btn-lg" id="confirmBtn">
+                                        <i class="fas fa-check-circle me-2"></i>Confirm Booking
+                                    </button>
+                                {% endif %}
+                            </div>
+                        </form>
                     </div>
-                </form>
+                </div>
             </div>
         </div>
     </div>
 </section>
 
 <script>
-// Bootstrap form validation
-(function () {
-  'use strict'
-  var forms = document.querySelectorAll('.needs-validation')
-  Array.prototype.slice.call(forms)
-    .forEach(function (form) {
-      form.addEventListener('submit', function (event) {
-        if (!form.checkValidity()) {
-          event.preventDefault()
-          event.stopPropagation()
+// Haversine formula to calculate distance between two coordinates
+function calculateHaversineDistance(lat1, lon1, lat2, lon2) {
+    const R = 6371; // Earth's radius in km
+    const dLat = (lat2 - lat1) * Math.PI / 180;
+    const dLon = (lon2 - lon1) * Math.PI / 180;
+    const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+              Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+              Math.sin(dLon / 2) * Math.sin(dLon / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    return R * c;
+}
+
+// Geocode address to coordinates using OpenStreetMap Nominatim API
+async function geocodeAddress(address) {
+    try {
+        const response = await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(address)}&format=json&limit=1`);
+        if (!response.ok) throw new Error('Geocoding failed');
+        
+        const data = await response.json();
+        if (data.length === 0) return null;
+        
+        return {
+            lat: parseFloat(data[0].lat),
+            lon: parseFloat(data[0].lon),
+            display_name: data[0].display_name
+        };
+    } catch (error) {
+        console.error('Geocoding error:', error);
+        return null;
+    }
+}
+
+// Estimate distance and auto-calculate cost
+async function estimateDistanceAndCost() {
+    const pickupInput = document.getElementById('pickup_location');
+    const destinationInput = document.getElementById('destination');
+    const serviceSelect = document.getElementById('service');
+    const distanceInput = document.getElementById('estimated_distance');
+    const distanceInfo = document.getElementById('distanceEstimationInfo');
+    const estimationStatus = document.getElementById('estimationStatus');
+    
+    // Check if both fields are filled
+    if (!pickupInput.value.trim() || !destinationInput.value.trim()) {
+        distanceInfo.classList.add('d-none');
+        document.getElementById('costSummaryContent').classList.add('d-none');
+        document.getElementById('costEmptyState').classList.remove('d-none');
+        return;
+    }
+
+    // Show estimation status
+    distanceInfo.classList.remove('d-none');
+    estimationStatus.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Calculating distance...';
+
+    try {
+        // Geocode both addresses
+        const pickupCoords = await geocodeAddress(pickupInput.value);
+        const destCoords = await geocodeAddress(destinationInput.value);
+
+        if (!pickupCoords || !destCoords) {
+            estimationStatus.innerHTML = '<i class="fas fa-exclamation-circle me-2"></i>Could not estimate distance. Please enter more specific addresses.';
+            return;
         }
-        form.classList.add('was-validated')
-      }, false)
-    })
-})()
 
-// Vehicle pricing rates (per km)
-const vehicleRates = {
-  'van': 2500,
-  'truck': 4000,
-  'cargo': 5500,
-  'bus': 3500,
-  'car': 2000
+        // Calculate distance using Haversine formula
+        const distance = calculateHaversineDistance(
+            pickupCoords.lat, pickupCoords.lon,
+            destCoords.lat, destCoords.lon
+        );
+
+        // Update distance input
+        distanceInput.value = distance.toFixed(1);
+
+        // Get service name
+        const serviceText = serviceSelect.options[serviceSelect.selectedIndex].text;
+
+        // Calculate cost
+        const vehicleRate = 2500; // UGX per km
+        const estimatedCost = distance * vehicleRate;
+
+        // Update cost summary card
+        updateCostSummary(serviceText, pickupInput.value, destinationInput.value, distance, vehicleRate, estimatedCost);
+
+        // Update status
+        estimationStatus.innerHTML = `<i class="fas fa-check-circle me-2"></i>Distance estimated: <strong>${distance.toFixed(1)} km</strong>`;
+
+        // Store values in hidden inputs
+        const vehicleRateInput = document.getElementById('vehicle_rate');
+        const estimatedCostInput = document.getElementById('estimated_cost');
+        
+        if (vehicleRateInput) vehicleRateInput.value = vehicleRate;
+        if (estimatedCostInput) estimatedCostInput.value = estimatedCost;
+
+    } catch (error) {
+        console.error('Error during estimation:', error);
+        estimationStatus.innerHTML = '<i class="fas fa-exclamation-circle me-2"></i>Error estimating distance. Please try again.';
+    }
 }
 
-// Calculate estimated price based on vehicle type and distance
-function calculatePrice() {
-  const vehicle = document.getElementById('vehicle').value;
-  const date = document.getElementById('date').value;
-  
-  if (!vehicle || !date) {
-    document.getElementById('totalPrice').textContent = 'UGX 0';
-    document.getElementById('rate').textContent = '-- /km';
-    document.getElementById('distance').textContent = '-- km';
-    return;
-  }
-  
-  // Simulate distance calculation (normally would use Google Maps API)
-  const estimatedDistance = Math.floor(Math.random() * 50) + 10; // Random 10-60 km for demo
-  const rate = vehicleRates[vehicle];
-  const basePrice = estimatedDistance * rate;
-  
-  // Add 10% surcharge if booking is for weekend
-  const bookingDate = new Date(date);
-  const dayOfWeek = bookingDate.getDay();
-  const isWeekend = dayOfWeek === 5 || dayOfWeek === 6;
-  const surcharge = isWeekend ? basePrice * 0.1 : 0;
-  const totalPrice = basePrice + surcharge;
-  
-  // Update display
-  document.getElementById('distance').textContent = estimatedDistance + ' km';
-  document.getElementById('rate').textContent = 'UGX ' + rate.toLocaleString() + ' /km';
-  document.getElementById('totalPrice').textContent = 'UGX ' + Math.round(totalPrice).toLocaleString();
+// Update cost summary card
+function updateCostSummary(service, pickup, destination, distance, rate, cost) {
+    document.getElementById('costService').textContent = service;
+    document.getElementById('costPickup').textContent = pickup;
+    document.getElementById('costDestination').textContent = destination;
+    document.getElementById('costDistance').textContent = distance.toFixed(1);
+    document.getElementById('costRate').textContent = rate.toLocaleString();
+    document.getElementById('costTotal').textContent = cost.toLocaleString();
+    
+    // Show summary, hide empty state
+    document.getElementById('costSummaryContent').classList.remove('d-none');
+    document.getElementById('costEmptyState').classList.add('d-none');
 }
 
-// Update vehicle options based on service
-function updateVehicleOptions() {
-  const service = document.getElementById('service').value;
-  // Service handling can be extended based on your service types
-  calculatePrice();
-}
-
-// Set minimum date to today
-document.getElementById('date').min = new Date().toISOString().split('T')[0];
+// Initialize on page load
+document.addEventListener('DOMContentLoaded', function() {
+    var form = document.getElementById('bookingForm');
+    if (!form) return;
+    
+    // Create hidden inputs if they don't exist
+    if (!document.getElementById('vehicle_rate')) {
+        var vehicleRateInput = document.createElement('input');
+        vehicleRateInput.type = 'hidden';
+        vehicleRateInput.name = 'vehicle_rate';
+        vehicleRateInput.id = 'vehicle_rate';
+        vehicleRateInput.value = '2500';
+        form.appendChild(vehicleRateInput);
+    }
+    
+    if (!document.getElementById('estimated_cost')) {
+        var estimatedCostInput = document.createElement('input');
+        estimatedCostInput.type = 'hidden';
+        estimatedCostInput.name = 'estimated_cost';
+        estimatedCostInput.id = 'estimated_cost';
+        estimatedCostInput.value = '0';
+        form.appendChild(estimatedCostInput);
+    }
+});
 </script>
+
+<style>
+.booking-step {
+    animation: fadeIn 0.3s ease-in;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.btn-submit {
+    background: linear-gradient(135deg, #FF8C00 0%, #FF6B35 100%);
+    border: none;
+    color: white;
+    font-weight: 600;
+    padding: 12px 30px;
+    border-radius: 5px;
+    transition: all 0.3s ease;
+}
+
+.btn-submit:hover {
+    background: linear-gradient(135deg, #FF6B35 0%, #FF5722 100%);
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(255, 107, 53, 0.4);
+}
+</style>
 {% endblock %}

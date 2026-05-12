@@ -248,6 +248,66 @@
     width: 100%;
 }
 
+.quick-link {
+    color: rgba(255, 255, 255, 0.9) !important;
+    text-decoration: none;
+    transition: all 200ms ease-in-out;
+    position: relative;
+    display: inline-block;
+    padding-bottom: 2px;
+}
+
+.quick-link::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background: #FF8C00;
+    transition: width 200ms ease-in-out;
+}
+
+.quick-link:hover {
+    color: #FF8C00 !important;
+    padding-left: 3px;
+    text-decoration: none !important;
+}
+
+.quick-link:hover::after {
+    width: 100%;
+}
+
+.quick-link:visited {
+    color: rgba(255, 255, 255, 0.9) !important;
+}
+
+.quick-link:focus {
+    color: rgba(255, 255, 255, 0.9) !important;
+    outline: none;
+}
+
+/* Services Footer Items Hover */
+footer .list-unstyled li {
+    color: rgba(255, 255, 255, 0.9);
+    transition: all 200ms ease-in-out;
+    cursor: pointer;
+}
+
+footer .list-unstyled li:hover {
+    color: #FF8C00;
+    padding-left: 8px;
+}
+
+footer .list-unstyled li i {
+    color: #FF8C00;
+    transition: color 200ms ease-in-out;
+}
+
+footer .list-unstyled li:hover i {
+    color: #FF8C00;
+}
+
 .social-icons {
     display: flex;
     gap: 1rem;
