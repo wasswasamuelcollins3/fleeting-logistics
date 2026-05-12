@@ -3,7 +3,7 @@ services:
     name: fleeting-logistics
     env: python
     plan: starter
-    runtime: python-3.12.7
+    runtime: python-3.11.9
     buildCommand: >
       python -m pip install --upgrade pip &&
       pip install -r requirements.txt &&
@@ -12,6 +12,6 @@ services:
     startCommand: gunicorn fleeting_logistics.wsgi:application
     envVars:
       - key: PYTHON_VERSION
-        value: 3.12.7
+        value: 3.11.9
       - key: DISABLE_COLLECTSTATIC
         value: "false"
