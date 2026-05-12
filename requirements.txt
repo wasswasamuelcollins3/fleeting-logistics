@@ -3,6 +3,7 @@ Django==6.0.4
 asgiref==3.11.1
 sqlparse==0.5.5
 tzdata==2026.1
+setuptools
 
 # Environment & Configuration
 python-dotenv==1.2.2
