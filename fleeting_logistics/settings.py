@@ -57,7 +57,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.sites',
-    'logistics',
+    'logistics.apps.LogisticsConfig',
     'crispy_forms',
     'crispy_bootstrap5',
     'allauth',
@@ -79,10 +79,12 @@ AUTHENTICATION_BACKENDS = [
 ]
 
 SITE_ID = 1
+# If django_site has no row for SITE_ID (e.g. fresh DB), bootstrap uses this domain (set on Render).
+DEFAULT_SITE_DOMAIN = (os.getenv("DEFAULT_SITE_DOMAIN", "").strip() or "example.com")[:100]
 
 ACCOUNT_LOGIN_METHODS = ['email']
-ACCOUNT_SIGNUP_FIELDS = ['email*']
-ACCOUNT_EMAIL_REQUIRED = True  # required when ACCOUNT_EMAIL_VERIFICATION is 'mandatory' (allauth assert)
+# Must include passwords; ['email*'] alone omits password fields and breaks allauth signup.
+ACCOUNT_SIGNUP_FIELDS = ['email*', 'password1*', 'password2*']
 ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
 
 # Django REST Framework
