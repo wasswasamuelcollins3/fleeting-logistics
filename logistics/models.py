@@ -205,8 +205,7 @@ class Booking(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        svc = self.service.name if self.service_id else "—"
-        return f"{self.name} - {svc} - {self.date}"
+        return f"{self.name} - {self.service.name} - {self.date}"
 
     class Meta:
         ordering = ['-created_at']

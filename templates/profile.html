@@ -3,78 +3,28 @@
 {% block title %}Profile | Fleeting Logistics{% endblock %}
 
 {% block content %}
-<section class="py-5 bg-light min-vh-100">
+<section class="py-5">
     <div class="container">
         <div class="row justify-content-center">
-            <div class="col-lg-8 col-md-10 col-12">
-                <div class="card shadow border-0 fade-in">
-                    <div class="card-header bg-primary text-white">
-                        <h2 class="h4 mb-0">
-                            <i class="fas fa-user-circle me-2"></i>Your Profile
-                        </h2>
-                    </div>
-                    <div class="card-body p-4 p-md-5">
-                        <form method="post" class="needs-validation" novalidate id="profileForm">
+            <div class="col-lg-8">
+                <div class="card shadow-sm border-0">
+                    <div class="card-body p-5">
+                        <h1 class="h3 mb-4">Your Profile</h1>
+                        <form method="post">
                             {% csrf_token %}
-                            
-                            <div class="row">
-                                <div class="col-md-6 mb-4">
-                                    <label for="first_name" class="form-label">
-                                        <i class="fas fa-user me-2 text-primary"></i>First Name
-                                    </label>
-                                    <input type="text" class="form-control" id="first_name" name="first_name" value="{{ user.first_name }}" placeholder="Enter your first name">
-                                    <small class="form-text">Your first name for personalized communication</small>
-                                </div>
-                                <div class="col-md-6 mb-4">
-                                    <label for="last_name" class="form-label">
-                                        <i class="fas fa-user me-2 text-primary"></i>Last Name
-                                    </label>
-                                    <input type="text" class="form-control" id="last_name" name="last_name" value="{{ user.last_name }}" placeholder="Enter your last name">
-                                    <small class="form-text">Your last name for formal communications</small>
-                                </div>
+                            <div class="mb-3">
+                                <label for="first_name" class="form-label">First Name</label>
+                                <input type="text" class="form-control" id="first_name" name="first_name" value="{{ user.first_name }}">
                             </div>
-
-                            <div class="mb-4">
-                                <label for="email" class="form-label">
-                                    <i class="fas fa-envelope me-2 text-primary"></i>Email Address
-                                </label>
-                                <input type="email" class="form-control" id="email" name="email" value="{{ user.email }}" placeholder="Enter your email address">
-                                <small class="form-text">We'll use this for booking confirmations and notifications</small>
+                            <div class="mb-3">
+                                <label for="last_name" class="form-label">Last Name</label>
+                                <input type="text" class="form-control" id="last_name" name="last_name" value="{{ user.last_name }}">
                             </div>
-
-                            <div class="mb-4">
-                                <label for="username" class="form-label">
-                                    <i class="fas fa-tag me-2 text-primary"></i>Username
-                                </label>
-                                <input type="text" class="form-control" id="username" value="{{ user.username }}" disabled>
-                                <small class="form-text text-muted">Username cannot be changed</small>
+                            <div class="mb-3">
+                                <label for="email" class="form-label">Email Address</label>
+                                <input type="email" class="form-control" id="email" name="email" value="{{ user.email }}">
                             </div>
-
-                            <hr class="my-4">
-
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <small class="form-text text-muted">
-                                        <i class="fas fa-calendar-alt me-1"></i>
-                                        Member since: {{ user.date_joined|date:"F d, Y" }}
-                                    </small>
-                                </div>
-                                <div class="col-md-6">
-                                    <small class="form-text text-muted">
-                                        <i class="fas fa-history me-1"></i>
-                                        Last updated: {{ user.last_login|default:"Never" }}
-                                    </small>
-                                </div>
-                            </div>
-
-                            <div class="mt-5 d-flex gap-3 flex-wrap">
-                                <button type="submit" class="btn btn-primary" id="saveBtn">
-                                    <i class="fas fa-save me-2"></i>Save Changes
-                                </button>
-                                <a href="{% url 'dashboard' %}" class="btn btn-outline-secondary">
-                                    <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
-                                </a>
-                            </div>
+                            <button type="submit" class="btn btn-primary">Save Changes</button>
                         </form>
                     </div>
                 </div>
@@ -82,29 +32,4 @@
         </div>
     </div>
 </section>
-
-<script>
-// Form validation
-const form = document.getElementById('profileForm');
-const saveBtn = document.getElementById('saveBtn');
-
-form.addEventListener('submit', function(e) {
-    if (!form.checkValidity() === false) {
-        e.preventDefault();
-        e.stopPropagation();
-    } else {
-        saveBtn.classList.add('loading');
-        saveBtn.disabled = true;
-    }
-    form.classList.add('was-validated');
-});
-
-// Auto-dismiss alerts after 5 seconds
-document.querySelectorAll('.alert').forEach(alert => {
-    setTimeout(() => {
-        const bsAlert = new bootstrap.Alert(alert);
-        bsAlert.close();
-    }, 5000);
-});
-</script>
 {% endblock %}

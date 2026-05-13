@@ -10,45 +10,25 @@
                 <div class="card shadow-sm border-0">
                     <div class="card-body p-5">
                         <h1 class="h3 mb-4">Track Your Shipment</h1>
-                        <p class="text-muted mb-4">Enter your tracking ID, booking ID, email address, or phone number to check the latest status.</p>
+                        <p class="text-muted mb-4">Enter your booking ID, email address, or phone number to check the latest status of your shipment or booking request.</p>
 
                         <form method="get" class="mb-4">
                             <div class="input-group">
-                                <input type="text" name="query" class="form-control form-control-lg" placeholder="Tracking ID, booking ID, email, or phone" value="{{ query }}" aria-label="Track shipment">
+                                <input type="text" name="query" class="form-control form-control-lg" placeholder="Booking ID, email, or phone number" value="{{ query }}" aria-label="Track shipment">
                                 <button class="btn btn-primary btn-lg" type="submit">Search</button>
                             </div>
                         </form>
 
-                        {% if shipment_results %}
-                            <h2 class="h5 mt-4 mb-3">Shipments</h2>
+                        {% if results %}
                             <div class="list-group">
-                                {% for shipment in shipment_results %}
-                                    <div class="list-group-item list-group-item-action mb-3 shadow-sm rounded">
-                                        <div class="d-flex justify-content-between align-items-center mb-2">
-                                            <h5 class="mb-0">{{ shipment.tracking_id }}</h5>
-                                            <span class="badge rounded-pill bg-primary text-white">{{ shipment.get_status_display }}</span>
-                                        </div>
-                                        <p class="mb-1"><strong>Service:</strong> {{ shipment.service.name }}</p>
-                                        <p class="mb-1"><strong>Sender:</strong> {{ shipment.sender_name }} — {{ shipment.sender_phone }}</p>
-                                        <p class="mb-1"><strong>Recipient:</strong> {{ shipment.recipient_name }} — {{ shipment.recipient_phone }}</p>
-                                        <p class="mb-1"><strong>Route:</strong> {{ shipment.sender_address|truncatewords:15 }} → {{ shipment.recipient_address|truncatewords:15 }}</p>
-                                        <p class="mb-0 text-muted small">Updated {{ shipment.updated_at }}</p>
-                                    </div>
-                                {% endfor %}
-                            </div>
-                        {% endif %}
-
-                        {% if booking_results %}
-                            <h2 class="h5 mt-4 mb-3">Bookings</h2>
-                            <div class="list-group">
-                                {% for booking in booking_results %}
+                                {% for booking in results %}
                                     <div class="list-group-item list-group-item-action mb-3 shadow-sm rounded">
                                         <div class="d-flex justify-content-between align-items-center mb-2">
                                             <h5 class="mb-0">Booking #{{ booking.pk }}</h5>
                                             <span class="badge rounded-pill bg-success text-white">{{ booking.get_status_display }}</span>
                                         </div>
                                         <p class="mb-1"><strong>Customer:</strong> {{ booking.name }}</p>
-                                        <p class="mb-1"><strong>Service:</strong> {% if booking.service %}{{ booking.service.name }}{% else %}—{% endif %}</p>
+                                        <p class="mb-1"><strong>Service:</strong> {{ booking.service.name }}</p>
                                         <p class="mb-1"><strong>Pickup:</strong> {{ booking.pickup_location }}</p>
                                         <p class="mb-1"><strong>Destination:</strong> {{ booking.destination }}</p>
                                         <p class="mb-1"><strong>Date:</strong> {{ booking.date }}</p>
@@ -57,12 +37,10 @@
                                     </div>
                                 {% endfor %}
                             </div>
-                        {% endif %}
-
-                        {% if query and not shipment_results and not booking_results %}
-                            <div class="alert alert-warning mb-0">No results were found for "{{ query }}". Please try another tracking ID, booking ID, email, or phone number.</div>
-                        {% elif not query %}
-                            <p class="text-muted">You can track your shipment or booking status by entering the reference information above.</p>
+                        {% elif query %}
+                            <div class="alert alert-warning mb-0">No results were found for "{{ query }}". Please try another booking ID, email, or phone number.</div>
+                        {% else %}
+                            <p class="text-muted">You can track your booking status by entering the reference information above.</p>
                         {% endif %}
                     </div>
                 </div>

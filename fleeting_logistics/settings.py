@@ -12,10 +12,6 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 
 import os
 from pathlib import Path
-
-import dj_database_url
-from django.contrib.messages import constants as message_constants
-from django.core.exceptions import ImproperlyConfigured
 from dotenv import load_dotenv
 
 # Load environment variables from .env file
@@ -28,23 +24,24 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
+# SECURITY WARNING: keep the secret key used in production secret!
+SECRET_KEY = os.getenv("SECRET_KEY")
+
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv("DEBUG", "False") == "True"
 
-# Must be non-empty: djangorestframework-simplejwt reads SECRET_KEY during app loading.
-# A blank SECRET_KEY in the environment (common on misconfigured hosts) must not be used as-is.
-SECRET_KEY = (os.getenv("SECRET_KEY") or "").strip() or "django-insecure-dev-key-change-in-production"
+ALLOWED_HOSTS = ['*']
 
-# Host / domain validation (leading dot matches all subdomains, e.g. Render)
-ALLOWED_HOSTS = [
-    h.strip()
-    for h in os.getenv("ALLOWED_HOSTS", "localhost,127.0.0.1").split(",")
-    if h.strip()
-]
-if not DEBUG:
-    for host in (".onrender.com", "fleetinglogistics.com", "www.fleetinglogistics.com"):
-        if host not in ALLOWED_HOSTS:
-            ALLOWED_HOSTS.append(host)
+
+# Email settings
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = os.getenv('EMAIL_HOST', 'smtp.gmail.com')
+EMAIL_PORT = int(os.getenv('EMAIL_PORT', 587))
+EMAIL_USE_TLS = os.getenv('EMAIL_USE_TLS', 'True').lower() == 'true'
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
+DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', EMAIL_HOST_USER)
+ADMIN_EMAIL = os.getenv('ADMIN_EMAIL', EMAIL_HOST_USER)
 
 
 # Application definition
@@ -57,7 +54,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.sites',
-    'logistics.apps.LogisticsConfig',
+    'logistics',
     'crispy_forms',
     'crispy_bootstrap5',
     'allauth',
@@ -79,12 +76,10 @@ AUTHENTICATION_BACKENDS = [
 ]
 
 SITE_ID = 1
-# If django_site has no row for SITE_ID (e.g. fresh DB), bootstrap uses this domain (set on Render).
-DEFAULT_SITE_DOMAIN = (os.getenv("DEFAULT_SITE_DOMAIN", "").strip() or "example.com")[:100]
 
 ACCOUNT_LOGIN_METHODS = ['email']
-# Must include passwords; ['email*'] alone omits password fields and breaks allauth signup.
-ACCOUNT_SIGNUP_FIELDS = ['email*', 'password1*', 'password2*']
+ACCOUNT_SIGNUP_FIELDS = ['email*']
+ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
 
 # Django REST Framework
@@ -99,10 +94,6 @@ REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 20
 }
-
-_cors_origins = os.getenv("CORS_ALLOWED_ORIGINS", "").strip()
-if _cors_origins:
-    CORS_ALLOWED_ORIGINS = [o.strip() for o in _cors_origins.split(",") if o.strip()]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -130,15 +121,10 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-                'logistics.context_processors.company_contact',
             ],
         },
     },
 ]
-
-MESSAGE_TAGS = {
-    message_constants.ERROR: 'danger',
-}
 
 WSGI_APPLICATION = 'fleeting_logistics.wsgi.application'
 
@@ -146,29 +132,12 @@ WSGI_APPLICATION = 'fleeting_logistics.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
 
-# SQLite when DATABASE_URL is unset; otherwise parsed via dj-database-url (Postgres, etc.)
-_database_url = os.getenv("DATABASE_URL", "").strip()
-if _database_url:
-    try:
-        DATABASES = {
-            "default": dj_database_url.config(
-                default=_database_url,
-                conn_max_age=600,
-            )
-        }
-    except ValueError as exc:
-        raise ImproperlyConfigured(
-            "DATABASE_URL could not be parsed. Use the full internal Postgres URL from Render "
-            "(starts with postgresql:// or postgres://). "
-            f"Detail: {exc}"
-        ) from exc
-else:
-    DATABASES = {
-        "default": {
-            "ENGINE": "django.db.backends.sqlite3",
-            "NAME": BASE_DIR / "db.sqlite3",
-        }
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
+}
 
 
 # Password validation
@@ -201,22 +170,16 @@ USE_I18N = True
 
 USE_TZ = True
 
-# WhatsApp (digits only, country code without +) and phone display for templates
-WHATSAPP_PHONE_DIGITS = "".join(
-    c for c in os.getenv("WHATSAPP_PHONE_DIGITS", "256768383164") if c.isdigit()
-) or "256768383164"
-SUPPORT_PHONE_DISPLAY = os.getenv("SUPPORT_PHONE_DISPLAY", "+256 768 383 164")
-SUPPORT_PHONE_E164 = os.getenv("SUPPORT_PHONE_E164", "+256768383164")
 
-# Email
-EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
-EMAIL_HOST = os.getenv("EMAIL_HOST", "smtp.gmail.com")
-EMAIL_PORT = int(os.getenv("EMAIL_PORT", "587"))
-EMAIL_USE_TLS = os.getenv("EMAIL_USE_TLS", "True").lower() == "true"
-EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER")
-EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")
-DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL", EMAIL_HOST_USER or "")
-ADMIN_EMAIL = os.getenv("ADMIN_EMAIL", "info@fleetinglogistics.com")
+# Email Configuration
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = os.getenv('EMAIL_HOST', 'smtp.gmail.com')
+EMAIL_PORT = int(os.getenv('EMAIL_PORT', 587))
+EMAIL_USE_TLS = os.getenv('EMAIL_USE_TLS', 'True') == 'True'
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
+DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', EMAIL_HOST_USER)
+ADMIN_EMAIL = os.getenv('ADMIN_EMAIL', 'Revolutionnyz@protonmail.com')
 
 
 # Authentication settings

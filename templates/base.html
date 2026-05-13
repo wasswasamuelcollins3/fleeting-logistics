@@ -41,8 +41,6 @@
 
     <!-- Custom CSS -->
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
-    <link rel="stylesheet" href="{% static 'css/utils.css' %}">
-    <link rel="stylesheet" href="{% static 'css/navbar-footer.css' %}">
 
     {% block extra_head %}{% endblock %}
 </head>
@@ -130,48 +128,6 @@
         </div>
     </nav>
 
-    <!-- Messages Container -->
-    {% if messages %}
-    <div class="container mt-4 mb-4">
-        <div class="row">
-            <div class="col-12">
-                {% for message in messages %}
-                    <div class="alert alert-{{ message.tags|default:'info' }} alert-dismissible fade show" role="alert" data-bs-autohide="false">
-                        <div class="d-flex align-items-start">
-                            <div class="me-3">
-                                {% if message.tags == 'success' %}
-                                    <i class="fas fa-check-circle text-success"></i>
-                                {% elif message.tags == 'error' %}
-                                    <i class="fas fa-exclamation-circle text-danger"></i>
-                                {% elif message.tags == 'warning' %}
-                                    <i class="fas fa-exclamation-triangle text-warning"></i>
-                                {% else %}
-                                    <i class="fas fa-info-circle text-info"></i>
-                                {% endif %}
-                            </div>
-                            <div class="flex-grow-1">
-                                <strong>
-                                    {% if message.tags == 'success' %}
-                                        Success!
-                                    {% elif message.tags == 'error' %}
-                                        Error
-                                    {% elif message.tags == 'warning' %}
-                                        Warning
-                                    {% else %}
-                                        Info
-                                    {% endif %}
-                                </strong>
-                                <p class="mb-0">{{ message }}</p>
-                            </div>
-                        </div>
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    </div>
-                {% endfor %}
-            </div>
-        </div>
-    </div>
-    {% endif %}
-
     <!-- Main Content -->
     <main>
         {% block content %}{% endblock %}
@@ -196,7 +152,7 @@
                             <i class="fas fa-phone text-primary me-3"></i>
                             <div>
                                 <strong>Phone</strong><br>
-                                <a href="tel:{{ SUPPORT_PHONE_E164 }}" class="text-light text-decoration-none">{{ SUPPORT_PHONE_DISPLAY }}</a>
+                                <a href="tel:+256768383164" class="text-light text-decoration-none">+256 768 383 164</a>
                             </div>
                         </div>
                         <div class="d-flex align-items-center">
@@ -208,10 +164,10 @@
                         </div>
                     </div>
                     <div class="d-flex">
-                        <a href="{{ WHATSAPP_WA_URL }}" class="btn btn-success btn-sm me-2" target="_blank">
+                        <a href="https://wa.me/256768383164" class="btn btn-success btn-sm me-2" target="_blank">
                             <i class="fab fa-whatsapp me-1"></i>WhatsApp
                         </a>
-                        <a href="tel:{{ SUPPORT_PHONE_E164 }}" class="btn btn-outline-light btn-sm">
+                        <a href="tel:+256768383164" class="btn btn-outline-light btn-sm">
                             <i class="fas fa-phone me-1"></i>Call Now
                         </a>
                     </div>
@@ -221,12 +177,12 @@
                 <div class="col-lg-4 col-md-6">
                     <h6 class="text-warning mb-3">Quick Links</h6>
                     <ul class="list-unstyled">
-                        <li class="mb-2"><a href="{% url 'home' %}" class="quick-link">Home</a></li>
-                        <li class="mb-2"><a href="{% url 'about' %}" class="quick-link">About Us</a></li>
-                        <li class="mb-2"><a href="{% url 'services' %}" class="quick-link">Services</a></li>
-                        <li class="mb-2"><a href="{% url 'tracking' %}" class="quick-link">Track Shipment</a></li>
-                        <li class="mb-2"><a href="{% url 'booking' %}" class="quick-link">Book Now</a></li>
-                        <li class="mb-2"><a href="{% url 'contact' %}" class="quick-link">Contact</a></li>
+                        <li class="mb-2"><a href="{% url 'home' %}" class="text-light text-decoration-none">Home</a></li>
+                        <li class="mb-2"><a href="{% url 'about' %}" class="text-light text-decoration-none">About Us</a></li>
+                        <li class="mb-2"><a href="{% url 'services' %}" class="text-light text-decoration-none">Services</a></li>
+                        <li class="mb-2"><a href="{% url 'tracking' %}" class="text-light text-decoration-none">Track Shipment</a></li>
+                        <li class="mb-2"><a href="{% url 'booking' %}" class="text-light text-decoration-none">Book Now</a></li>
+                        <li class="mb-2"><a href="{% url 'contact' %}" class="text-light text-decoration-none">Contact</a></li>
                     </ul>
                 </div>
 
@@ -247,7 +203,7 @@
             <hr class="my-4">
             <div class="row align-items-center">
                 <div class="col-md-6">
-                    <p class="mb-0">&copy; 2026 Fleeting Logistics Company Limited. All rights reserved.</p>
+                    <p class="mb-0">&copy; 2024 Fleeting Logistics Company Limited. All rights reserved.</p>
                 </div>
                 <div class="col-md-6 text-md-end">
                     <div class="d-flex justify-content-md-end">
@@ -263,7 +219,7 @@
                         <a href="#" class="text-light me-3" title="Instagram">
                             <i class="fab fa-instagram"></i>
                         </a>
-                        <a href="{{ WHATSAPP_WA_URL }}" class="text-light" title="WhatsApp" target="_blank">
+                        <a href="https://wa.me/256768383164" class="text-light" title="WhatsApp" target="_blank">
                             <i class="fab fa-whatsapp"></i>
                         </a>
                     </div>
@@ -314,9 +270,11 @@
             });
         });
     </script>
+</body>
+</html>
 
     <!-- WhatsApp Floating Button -->
-    <a href="{{ WHATSAPP_FLOAT_URL }}"
+    <a href="https://wa.me/256XXXXXXXXX?text=Hello%20Fleeting%20Logistics%2C%20I%20would%20like%20to%20book%20a%20service." 
        class="whatsapp-float" target="_blank" title="Chat with us on WhatsApp">
         <i class="fab fa-whatsapp"></i>
     </a>
