@@ -9,8 +9,8 @@ services:
       pip install -r requirements.txt &&
       python manage.py migrate --noinput &&
       python manage.py collectstatic --noinput
-    # Render sets PORT; binding to 8000 causes immediate health-check failure (exit 1).
-    startCommand: gunicorn fleeting_logistics.wsgi:application --bind 0.0.0.0:$PORT
+    # Use bash so ${PORT:-10000} expands; blank PORT breaks --bind otherwise.
+    startCommand: bash -lc 'exec gunicorn fleeting_logistics.wsgi:application --bind 0.0.0.0:${PORT:-10000}'
     envVars:
       - key: PYTHON_VERSION
         value: 3.11.9

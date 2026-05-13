@@ -42,11 +42,13 @@ print(get_random_secret_key())
 python -m pip install --upgrade pip && pip install -r requirements.txt && python manage.py migrate --noinput && python manage.py collectstatic --noinput
 ```
 
-**Start Command:** (must use Render’s `PORT` — not optional)
+**Start Command:** (must bind to Render’s `PORT`)
 
 ```bash
-gunicorn fleeting_logistics.wsgi:application --bind 0.0.0.0:$PORT
+bash -lc 'exec gunicorn fleeting_logistics.wsgi:application --bind 0.0.0.0:${PORT:-10000}'
 ```
+
+`bash -lc` ensures `PORT` expands; `${PORT:-10000}` matches Render’s default if needed.
 
 ## Step 4: Add PostgreSQL Database (Optional)
 
@@ -69,11 +71,12 @@ For production, use PostgreSQL instead of SQLite:
 - Check requirements.txt compatibility
 
 ### Gunicorn exits with status 1
-- **Most common:** the web process must listen on Render’s **`PORT`**. Use  
-  `gunicorn fleeting_logistics.wsgi:application --bind 0.0.0.0:$PORT`  
-  (see `render.yaml` / `Procfile`). If Gunicorn binds only to `:8000`, health checks fail and Render stops the service.
-- Open **Logs** in the Render dashboard for the Python traceback (database URL, missing env vars, etc.).
-- Verify `DATABASE_URL`, `SECRET_KEY`, and `ALLOWED_HOSTS` are set for production.
+- **Bind / health checks:** use  
+  `bash -lc 'exec gunicorn fleeting_logistics.wsgi:application --bind 0.0.0.0:${PORT:-10000}'`  
+  (see `render.yaml`). Binding only to `:8000` fails Render health checks.
+- **Blank `SECRET_KEY`:** if `SECRET_KEY` exists in the dashboard but is empty, Django + `djangorestframework-simplejwt` can crash during startup. Remove the variable or set a long random value.
+- **Bad `DATABASE_URL`:** must be a full URL (`postgresql://…` from Render’s Postgres). A typo raises `ValueError` / `ImproperlyConfigured` at import — check deploy **Logs** for the traceback.
+- Verify `DATABASE_URL`, `SECRET_KEY`, and `ALLOWED_HOSTS` for production.
 
 ### Static files not loading
 - Run `python manage.py collectstatic --noinput`

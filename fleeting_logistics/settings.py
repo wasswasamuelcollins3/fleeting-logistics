@@ -15,6 +15,7 @@ from pathlib import Path
 
 import dj_database_url
 from django.contrib.messages import constants as message_constants
+from django.core.exceptions import ImproperlyConfigured
 from dotenv import load_dotenv
 
 # Load environment variables from .env file
@@ -27,11 +28,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.getenv("SECRET_KEY", "django-insecure-dev-key-change-in-production")
-
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv("DEBUG", "False") == "True"
+
+# Must be non-empty: djangorestframework-simplejwt reads SECRET_KEY during app loading.
+# A blank SECRET_KEY in the environment (common on misconfigured hosts) must not be used as-is.
+SECRET_KEY = (os.getenv("SECRET_KEY") or "").strip() or "django-insecure-dev-key-change-in-production"
 
 # Host / domain validation (leading dot matches all subdomains, e.g. Render)
 ALLOWED_HOSTS = [
@@ -144,12 +146,19 @@ WSGI_APPLICATION = 'fleeting_logistics.wsgi.application'
 # SQLite when DATABASE_URL is unset; otherwise parsed via dj-database-url (Postgres, etc.)
 _database_url = os.getenv("DATABASE_URL", "").strip()
 if _database_url:
-    DATABASES = {
-        "default": dj_database_url.config(
-            default=_database_url,
-            conn_max_age=600,
-        )
-    }
+    try:
+        DATABASES = {
+            "default": dj_database_url.config(
+                default=_database_url,
+                conn_max_age=600,
+            )
+        }
+    except ValueError as exc:
+        raise ImproperlyConfigured(
+            "DATABASE_URL could not be parsed. Use the full internal Postgres URL from Render "
+            "(starts with postgresql:// or postgres://). "
+            f"Detail: {exc}"
+        ) from exc
 else:
     DATABASES = {
         "default": {
