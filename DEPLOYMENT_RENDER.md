@@ -42,9 +42,10 @@ print(get_random_secret_key())
 python -m pip install --upgrade pip && pip install -r requirements.txt && python manage.py migrate --noinput && python manage.py collectstatic --noinput
 ```
 
-**Start Command:**
+**Start Command:** (must use Render’s `PORT` — not optional)
+
 ```bash
-gunicorn fleeting_logistics.wsgi:application
+gunicorn fleeting_logistics.wsgi:application --bind 0.0.0.0:$PORT
 ```
 
 ## Step 4: Add PostgreSQL Database (Optional)
@@ -68,9 +69,11 @@ For production, use PostgreSQL instead of SQLite:
 - Check requirements.txt compatibility
 
 ### Gunicorn exits with status 1
-- Check Django logs in Render dashboard
-- Verify all environment variables are set
-- Ensure database connection string is correct
+- **Most common:** the web process must listen on Render’s **`PORT`**. Use  
+  `gunicorn fleeting_logistics.wsgi:application --bind 0.0.0.0:$PORT`  
+  (see `render.yaml` / `Procfile`). If Gunicorn binds only to `:8000`, health checks fail and Render stops the service.
+- Open **Logs** in the Render dashboard for the Python traceback (database URL, missing env vars, etc.).
+- Verify `DATABASE_URL`, `SECRET_KEY`, and `ALLOWED_HOSTS` are set for production.
 
 ### Static files not loading
 - Run `python manage.py collectstatic --noinput`

@@ -1,1 +1,1 @@
-web: gunicorn fleeting_logistics.wsgi --bind 0.0.0.0:$PORT
+web: gunicorn fleeting_logistics.wsgi:application --bind 0.0.0.0:$PORT
