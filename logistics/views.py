@@ -10,6 +10,7 @@ from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 from django.core.mail import send_mail
 from django.db.models import Q
 from django.shortcuts import redirect, render
+from django.utils.dateparse import parse_date, parse_time
 
 from .models import Booking, ContactMessage, Service, Shipment
 
@@ -25,6 +26,18 @@ def _decimal_or_none(value):
     try:
         return Decimal(s)
     except InvalidOperation:
+        return None
+
+
+def _float_or_none(value):
+    if value is None:
+        return None
+    s = str(value).strip()
+    if not s:
+        return None
+    try:
+        return float(s)
+    except ValueError:
         return None
 
 
@@ -153,17 +166,31 @@ def booking(request):
 
     if request.method == "POST":
         service_id = request.POST.get("service")
-        name = request.POST.get("name")
-        phone = request.POST.get("phone")
-        email = request.POST.get("email")
-        pickup_location = request.POST.get("pickup_location")
-        destination = request.POST.get("destination")
-        date = request.POST.get("date")
-        time = request.POST.get("time")
-        message = request.POST.get("message")
+        name = (request.POST.get("name") or "").strip()
+        phone = (request.POST.get("phone") or "").strip()
+        email = (request.POST.get("email") or "").strip()
+        pickup_location = (request.POST.get("pickup_location") or "").strip()
+        destination = (request.POST.get("destination") or "").strip()
+        date_raw = request.POST.get("date")
+        time_raw = request.POST.get("time")
+        message = (request.POST.get("message") or "").strip()
         estimated_distance = request.POST.get("estimated_distance")
         vehicle_rate = request.POST.get("vehicle_rate")
         estimated_cost = request.POST.get("estimated_cost")
+
+        if not email:
+            messages.error(
+                request,
+                "Please enter your email address so we can send a booking confirmation.",
+            )
+            return redirect("booking")
+
+        booking_date = parse_date(date_raw) if date_raw else None
+        if not booking_date:
+            messages.error(request, "Please choose a valid booking date.")
+            return redirect("booking")
+
+        booking_time = parse_time(time_raw) if time_raw else None
 
         try:
             service = Service.objects.get(id=service_id)
@@ -179,9 +206,9 @@ def booking(request):
             email=email,
             pickup_location=pickup_location,
             destination=destination,
-            date=date,
-            time=time,
-            estimated_distance=float(estimated_distance) if estimated_distance else None,
+            date=booking_date,
+            time=booking_time,
+            estimated_distance=_float_or_none(estimated_distance),
             vehicle_rate=_decimal_or_none(vehicle_rate),
             estimated_cost=_decimal_or_none(estimated_cost),
             message=message,
@@ -197,7 +224,7 @@ Booking Details:
 - Service: {service.name}
 - Pickup Location: {pickup_location}
 - Destination: {destination}
-- Date: {date}
+- Date: {booking_date}
 - Phone: {phone}
 
 Your booking request has been received and our team will contact you shortly.
@@ -205,7 +232,11 @@ Your booking request has been received and our team will contact you shortly.
 Best regards,
 Fleeting Logistics Team
 """
-        from_email = settings.DEFAULT_FROM_EMAIL or settings.EMAIL_HOST_USER
+        from_email = (
+            (getattr(settings, "DEFAULT_FROM_EMAIL", None) or "").strip()
+            or (getattr(settings, "EMAIL_HOST_USER", None) or "").strip()
+            or getattr(settings, "SERVER_EMAIL", "root@localhost")
+        )
         try:
             send_mail(
                 subject,
@@ -231,19 +262,21 @@ Phone: {phone}
 Service: {service.name}
 From: {pickup_location}
 To: {destination}
-Date: {date}
+Date: {booking_date}
 Message: {message or 'None'}
 
 Please contact the customer to confirm the booking.
 """
         try:
-            send_mail(
-                admin_subject,
-                admin_message,
-                from_email,
-                [settings.ADMIN_EMAIL],
-                fail_silently=False,
-            )
+            admin_to = (getattr(settings, "ADMIN_EMAIL", None) or "").strip()
+            if admin_to:
+                send_mail(
+                    admin_subject,
+                    admin_message,
+                    from_email,
+                    [admin_to],
+                    fail_silently=False,
+                )
         except Exception:
             logger.exception("Booking: admin notification email failed")
 
@@ -255,7 +288,7 @@ Name: {name}
 Phone: {phone}
 Pickup: {pickup_location}
 Destination: {destination}
-Date: {date}
+Date: {booking_date}
 Details: {message}"""
 
         encoded_message = urllib.parse.quote(whatsapp_message)
