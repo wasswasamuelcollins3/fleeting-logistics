@@ -12,6 +12,9 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 
 import os
 from pathlib import Path
+
+import dj_database_url
+from django.contrib.messages import constants as message_constants
 from dotenv import load_dotenv
 
 # Load environment variables from .env file
@@ -30,18 +33,16 @@ SECRET_KEY = os.getenv("SECRET_KEY", "django-insecure-dev-key-change-in-producti
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv("DEBUG", "False") == "True"
 
-ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "localhost,127.0.0.1").split(",")
-
-
-# Email settings
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = os.getenv('EMAIL_HOST', 'smtp.gmail.com')
-EMAIL_PORT = int(os.getenv('EMAIL_PORT', 587))
-EMAIL_USE_TLS = os.getenv('EMAIL_USE_TLS', 'True').lower() == 'true'
-EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
-EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
-DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', EMAIL_HOST_USER)
-ADMIN_EMAIL = os.getenv('ADMIN_EMAIL', EMAIL_HOST_USER)
+# Host / domain validation (leading dot matches all subdomains, e.g. Render)
+ALLOWED_HOSTS = [
+    h.strip()
+    for h in os.getenv("ALLOWED_HOSTS", "localhost,127.0.0.1").split(",")
+    if h.strip()
+]
+if not DEBUG:
+    for host in (".onrender.com", "fleetinglogistics.com", "www.fleetinglogistics.com"):
+        if host not in ALLOWED_HOSTS:
+            ALLOWED_HOSTS.append(host)
 
 
 # Application definition
@@ -80,7 +81,6 @@ SITE_ID = 1
 ACCOUNT_LOGIN_METHODS = ['email']
 ACCOUNT_SIGNUP_FIELDS = ['email*']
 ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
-ACCOUNT_EMAIL_REQUIRED = True
 
 # Django REST Framework
 REST_FRAMEWORK = {
@@ -94,6 +94,10 @@ REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 20
 }
+
+_cors_origins = os.getenv("CORS_ALLOWED_ORIGINS", "").strip()
+if _cors_origins:
+    CORS_ALLOWED_ORIGINS = [o.strip() for o in _cors_origins.split(",") if o.strip()]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -121,10 +125,15 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'logistics.context_processors.company_contact',
             ],
         },
     },
 ]
+
+MESSAGE_TAGS = {
+    message_constants.ERROR: 'danger',
+}
 
 WSGI_APPLICATION = 'fleeting_logistics.wsgi.application'
 
@@ -132,25 +141,20 @@ WSGI_APPLICATION = 'fleeting_logistics.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
 
-# Support both SQLite (local) and PostgreSQL (production)
-if os.getenv('DATABASE_URL'):
-    # Use PostgreSQL on Render/production
+# SQLite when DATABASE_URL is unset; otherwise parsed via dj-database-url (Postgres, etc.)
+_database_url = os.getenv("DATABASE_URL", "").strip()
+if _database_url:
     DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql',
-            'NAME': os.getenv('DB_NAME', 'fleeting_logistics'),
-            'USER': os.getenv('DB_USER', 'postgres'),
-            'PASSWORD': os.getenv('DB_PASSWORD', ''),
-            'HOST': os.getenv('DB_HOST', 'localhost'),
-            'PORT': os.getenv('DB_PORT', '5432'),
-        }
+        "default": dj_database_url.config(
+            default=_database_url,
+            conn_max_age=600,
+        )
     }
 else:
-    # Use SQLite locally
     DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': BASE_DIR / 'db.sqlite3',
+        "default": {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": BASE_DIR / "db.sqlite3",
         }
     }
 
@@ -185,16 +189,22 @@ USE_I18N = True
 
 USE_TZ = True
 
+# WhatsApp (digits only, country code without +) and phone display for templates
+WHATSAPP_PHONE_DIGITS = "".join(
+    c for c in os.getenv("WHATSAPP_PHONE_DIGITS", "256768383164") if c.isdigit()
+) or "256768383164"
+SUPPORT_PHONE_DISPLAY = os.getenv("SUPPORT_PHONE_DISPLAY", "+256 768 383 164")
+SUPPORT_PHONE_E164 = os.getenv("SUPPORT_PHONE_E164", "+256768383164")
 
-# Email Configuration
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = os.getenv('EMAIL_HOST', 'smtp.gmail.com')
-EMAIL_PORT = int(os.getenv('EMAIL_PORT', 587))
-EMAIL_USE_TLS = os.getenv('EMAIL_USE_TLS', 'True') == 'True'
-EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
-EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
-DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', EMAIL_HOST_USER)
-ADMIN_EMAIL = os.getenv('ADMIN_EMAIL', 'info@fleetinglogistics.com')
+# Email
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST = os.getenv("EMAIL_HOST", "smtp.gmail.com")
+EMAIL_PORT = int(os.getenv("EMAIL_PORT", "587"))
+EMAIL_USE_TLS = os.getenv("EMAIL_USE_TLS", "True").lower() == "true"
+EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER")
+EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")
+DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL", EMAIL_HOST_USER or "")
+ADMIN_EMAIL = os.getenv("ADMIN_EMAIL", "info@fleetinglogistics.com")
 
 
 # Authentication settings

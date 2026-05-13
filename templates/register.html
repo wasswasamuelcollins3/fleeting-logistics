@@ -3,66 +3,130 @@
 {% block title %}Register - Fleeting Logistics Company Limited{% endblock %}
 
 {% block content %}
-<section class="py-5 bg-light">
+<section class="py-5 bg-light min-vh-100 d-flex align-items-center">
     <div class="container">
         <div class="row justify-content-center">
-            <div class="col-lg-6">
-                <div class="card shadow">
-                    <div class="card-body p-5">
-                        <h1 class="text-center mb-4">Create Account</h1>
-                        
+            <div class="col-lg-5 col-md-6 col-12">
+                <div class="card shadow border-0 fade-in">
+                    <div class="card-header bg-success text-white text-center py-4">
+                        <h1 class="h3 mb-0">
+                            <i class="fas fa-user-plus me-2"></i>Create Account
+                        </h1>
+                        <p class="small mb-0 mt-2 opacity-75">Join Fleeting Logistics today</p>
+                    </div>
+                    <div class="card-body p-4 p-md-5">
                         {% if messages %}
                             {% for message in messages %}
                                 <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                                    <i class="fas fa-info-circle me-2"></i>
                                     {{ message }}
                                     <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                                 </div>
                             {% endfor %}
                         {% endif %}
                         
-                        <form method="post" class="needs-validation" novalidate>
+                        <form method="post" class="needs-validation" novalidate id="registerForm">
                             {% csrf_token %}
-                            <div class="mb-3">
-                                <label for="{{ form.username.id_for_label }}" class="form-label">Username</label>
-                                {{ form.username }}
+                            <div class="mb-4">
+                                <label for="{{ form.username.id_for_label }}" class="form-label">
+                                    <i class="fas fa-user me-2 text-success"></i>Username
+                                </label>
+                                <input type="text" class="form-control form-control-lg" id="{{ form.username.id_for_label }}" name="username" placeholder="Choose a username" required>
+                                <small class="form-text">3-30 characters, letters and numbers only</small>
                                 {% if form.username.errors %}
                                     <div class="invalid-feedback d-block">
+                                        <i class="fas fa-exclamation-circle me-1"></i>
                                         {{ form.username.errors.0 }}
                                     </div>
                                 {% endif %}
                             </div>
+
                             <div class="row">
-                                <div class="col-md-6 mb-3">
-                                    <label for="{{ form.password1.id_for_label }}" class="form-label">Password</label>
-                                    {{ form.password1 }}
+                                <div class="col-12 mb-4">
+                                    <label for="{{ form.password1.id_for_label }}" class="form-label">
+                                        <i class="fas fa-lock me-2 text-success"></i>Password
+                                    </label>
+                                    <input type="password" class="form-control form-control-lg" id="{{ form.password1.id_for_label }}" name="password1" placeholder="Enter a strong password" required>
+                                    <small class="form-text">Minimum 8 characters. Mix letters, numbers, and symbols</small>
                                     {% if form.password1.errors %}
                                         <div class="invalid-feedback d-block">
+                                            <i class="fas fa-exclamation-circle me-1"></i>
                                             {{ form.password1.errors.0 }}
                                         </div>
                                     {% endif %}
                                 </div>
-                                <div class="col-md-6 mb-3">
-                                    <label for="{{ form.password2.id_for_label }}" class="form-label">Confirm Password</label>
-                                    {{ form.password2 }}
+                                <div class="col-12 mb-4">
+                                    <label for="{{ form.password2.id_for_label }}" class="form-label">
+                                        <i class="fas fa-lock-open me-2 text-success"></i>Confirm Password
+                                    </label>
+                                    <input type="password" class="form-control form-control-lg" id="{{ form.password2.id_for_label }}" name="password2" placeholder="Confirm your password" required>
                                     {% if form.password2.errors %}
                                         <div class="invalid-feedback d-block">
+                                            <i class="fas fa-exclamation-circle me-1"></i>
                                             {{ form.password2.errors.0 }}
                                         </div>
                                     {% endif %}
                                 </div>
                             </div>
-                            <div class="text-center">
-                                <button type="submit" class="btn btn-primary btn-lg">Create Account</button>
+
+                            <div class="d-grid gap-2 mb-4">
+                                <button type="submit" class="btn btn-success btn-lg" id="registerBtn">
+                                    <i class="fas fa-check-circle me-2"></i>Create Account
+                                </button>
                             </div>
                         </form>
-                        
-                        <div class="text-center mt-3">
-                            <p>Already have an account? <a href="{% url 'login' %}">Login here</a></p>
+
+                        <hr class="my-4">
+
+                        <div class="text-center">
+                            <p class="text-muted mb-3">Already have an account?</p>
+                            <a href="{% url 'account_login' %}" class="btn btn-outline-success btn-lg w-100">
+                                <i class="fas fa-sign-in-alt me-2"></i>Login Here
+                            </a>
+                        </div>
+
+                        <div class="mt-4 pt-3 border-top text-center">
+                            <small class="text-muted">
+                                By creating an account, you agree to our Terms of Service
+                            </small>
                         </div>
                     </div>
+                </div>
+
+                <!-- Info Banner -->
+                <div class="alert alert-success mt-4 fade-in">
+                    <i class="fas fa-shield-alt me-2"></i>
+                    <strong>Secure:</strong> Your information is encrypted and stored securely.
                 </div>
             </div>
         </div>
     </div>
 </section>
+
+<script>
+    const form = document.getElementById('registerForm');
+    const registerBtn = document.getElementById('registerBtn');
+
+    form.addEventListener('submit', function(e) {
+        if (!form.checkValidity() === false) {
+            e.preventDefault();
+            e.stopPropagation();
+        } else {
+            registerBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Creating account...';
+            registerBtn.disabled = true;
+        }
+        form.classList.add('was-validated');
+    });
+</script>
+
+<style>
+    .min-vh-100 {
+        min-height: 100vh;
+    }
+
+    .form-control-lg {
+        font-size: 1rem;
+        padding: 0.75rem 1rem;
+    }
+</style>
 {% endblock %}

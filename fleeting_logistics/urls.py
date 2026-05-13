@@ -25,6 +25,9 @@ urlpatterns = [
     path('admin/', admin.site.urls),
 ]
 
-# Serve static files during development
-if settings.DEBUG:
-    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+# Serve static files during development (source tree, not collectstatic output)
+if settings.DEBUG and settings.STATICFILES_DIRS:
+    urlpatterns += static(
+        settings.STATIC_URL,
+        document_root=settings.STATICFILES_DIRS[0],
+    )

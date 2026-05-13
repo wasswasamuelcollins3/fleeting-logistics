@@ -3,32 +3,23 @@
 {% block title %}Dashboard | Fleeting Logistics{% endblock %}
 
 {% block content %}
-<section class="py-5">
+<section class="py-5 bg-light min-vh-100">
     <div class="container">
-        <div class="row justify-content-center">
-            <div class="col-lg-10">
-                <div class="card shadow-sm border-0">
+        <!-- Welcome Header -->
+        <div class="row mb-5">
+            <div class="col-12">
+                <div class="card border-0 shadow-md fade-in" style="background: linear-gradient(135deg, #0ea5e9 0%, #0c4a6e 100%); color: white;">
                     <div class="card-body p-5">
-                        <h1 class="h3 mb-3">Welcome back, {{ user.first_name|default:user.username }}!</h1>
-                        <p class="text-muted mb-4">This is your dashboard where you can view your bookings, manage your profile, and track shipment activity.</p>
-
-                        <div class="row gy-4">
-                            <div class="col-md-6">
-                                <div class="card border-0 shadow-sm h-100">
-                                    <div class="card-body">
-                                        <h5 class="card-title">My Bookings</h5>
-                                        <p class="card-text">Check your booking history and shipment requests.</p>
-                                        <a href="{% url 'booking' %}" class="btn btn-primary">View Bookings</a>
-                                    </div>
-                                </div>
+                        <div class="d-flex justify-content-between align-items-center flex-wrap">
+                            <div>
+                                <h1 class="h2 mb-2">
+                                    <i class="fas fa-chart-line me-3"></i>Welcome back, {{ user.first_name|default:user.username }}!
+                                </h1>
+                                <p class="mb-0 opacity-75">Here's what's happening with your bookings and shipments</p>
                             </div>
-                            <div class="col-md-6">
-                                <div class="card border-0 shadow-sm h-100">
-                                    <div class="card-body">
-                                        <h5 class="card-title">Profile Settings</h5>
-                                        <p class="card-text">Update your contact info, email, and account details.</p>
-                                        <a href="{% url 'profile' %}" class="btn btn-warning">Edit Profile</a>
-                                    </div>
+                            <div class="text-end hide-sm">
+                                <div class="h4 mb-0">
+                                    <i class="fas fa-calendar-alt me-2"></i>{{ now|date:"M d, Y" }}
                                 </div>
                             </div>
                         </div>
@@ -36,6 +27,135 @@
                 </div>
             </div>
         </div>
+
+        <!-- Stats Row -->
+        <div class="row g-4 mb-5">
+            <div class="col-md-4 col-sm-6">
+                <div class="card border-0 shadow-sm hover-lift fade-in">
+                    <div class="card-body p-4">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <p class="text-muted mb-2">Active Bookings</p>
+                                <h3 class="h2 mb-0">0</h3>
+                            </div>
+                            <div class="text-primary opacity-50">
+                                <i class="fas fa-shopping-cart fa-2x"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 col-sm-6">
+                <div class="card border-0 shadow-sm hover-lift fade-in">
+                    <div class="card-body p-4">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <p class="text-muted mb-2">Total Bookings</p>
+                                <h3 class="h2 mb-0">0</h3>
+                            </div>
+                            <div class="text-success opacity-50">
+                                <i class="fas fa-check-circle fa-2x"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 col-sm-6">
+                <div class="card border-0 shadow-sm hover-lift fade-in">
+                    <div class="card-body p-4">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <p class="text-muted mb-2">Total Spent</p>
+                                <h3 class="h2 mb-0">UGX 0</h3>
+                            </div>
+                            <div class="text-warning opacity-50">
+                                <i class="fas fa-credit-card fa-2x"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Actions Section -->
+        <div class="row g-4">
+            <div class="col-md-6">
+                <div class="card h-100 border-0 shadow-sm hover-lift fade-in">
+                    <div class="card-header bg-primary text-white border-0">
+                        <h5 class="mb-0">
+                            <i class="fas fa-plus-circle me-2"></i>Book a New Service
+                        </h5>
+                    </div>
+                    <div class="card-body p-4">
+                        <p class="text-muted mb-4">Need to transport goods or passengers? Book a new service with real-time cost estimation.</p>
+                        <div class="d-flex gap-2 flex-wrap">
+                            <a href="{% url 'booking' %}" class="btn btn-primary">
+                                <i class="fas fa-calendar-check me-2"></i>Book Now
+                            </a>
+                            <a href="{% url 'booking' %}?quote=true" class="btn btn-outline-primary">
+                                <i class="fas fa-tag me-2"></i>Get a Quote
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card h-100 border-0 shadow-sm hover-lift fade-in">
+                    <div class="card-header bg-success text-white border-0">
+                        <h5 class="mb-0">
+                            <i class="fas fa-cog me-2"></i>Manage Account
+                        </h5>
+                    </div>
+                    <div class="card-body p-4">
+                        <p class="text-muted mb-4">Update your profile information, view bookings, and manage your preferences.</p>
+                        <div class="d-flex gap-2 flex-wrap">
+                            <a href="{% url 'profile' %}" class="btn btn-success">
+                                <i class="fas fa-user-edit me-2"></i>Edit Profile
+                            </a>
+                            <a href="{% url 'tracking' %}" class="btn btn-outline-success">
+                                <i class="fas fa-search me-2"></i>Track Shipment
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Links Section -->
+        <div class="row mt-5">
+            <div class="col-12">
+                <h5 class="mb-4">Quick Links</h5>
+                <div class="d-flex gap-3 flex-wrap">
+                    <a href="{% url 'home' %}" class="btn btn-sm btn-outline-primary">
+                        <i class="fas fa-home me-1"></i>Home
+                    </a>
+                    <a href="{% url 'services' %}" class="btn btn-sm btn-outline-primary">
+                        <i class="fas fa-concierge-bell me-1"></i>Services
+                    </a>
+                    <a href="{% url 'about' %}" class="btn btn-sm btn-outline-primary">
+                        <i class="fas fa-info-circle me-1"></i>About Us
+                    </a>
+                    <a href="{% url 'contact' %}" class="btn btn-sm btn-outline-primary">
+                        <i class="fas fa-envelope me-1"></i>Contact
+                    </a>
+                </div>
+            </div>
+        </div>
     </div>
 </section>
+
+<style>
+    .hover-lift {
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+    
+    .hover-lift:hover {
+        transform: translateY(-4px);
+    }
+
+    .min-vh-100 {
+        min-height: 100vh;
+    }
+</style>
 {% endblock %}

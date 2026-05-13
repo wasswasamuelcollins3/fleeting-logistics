@@ -53,8 +53,7 @@ For production, use PostgreSQL instead of SQLite:
 
 1. Create a PostgreSQL database on Render
 2. Copy the connection string
-3. Set `DATABASE_URL` environment variable
-4. Update settings.py to use `dj-database-url`
+3. Set `DATABASE_URL` to the full connection string from Render (settings parse it with **dj-database-url**).
 
 ## Step 5: Deploy
 
