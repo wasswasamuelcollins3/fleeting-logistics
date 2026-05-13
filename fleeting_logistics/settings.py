@@ -82,6 +82,7 @@ SITE_ID = 1
 
 ACCOUNT_LOGIN_METHODS = ['email']
 ACCOUNT_SIGNUP_FIELDS = ['email*']
+ACCOUNT_EMAIL_REQUIRED = True  # required when ACCOUNT_EMAIL_VERIFICATION is 'mandatory' (allauth assert)
 ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
 
 # Django REST Framework
