@@ -81,26 +81,42 @@ def booking(request):
     services = Service.objects.filter(is_active=True)
     
     if request.method == 'POST':
-        service_id = request.POST.get('service')
-        name = request.POST.get('name')
-        phone = request.POST.get('phone')
-        email = request.POST.get('email')
-        pickup_location = request.POST.get('pickup_location')
-        destination = request.POST.get('destination')
-        date = request.POST.get('date')
-        time = request.POST.get('time')
-        message = request.POST.get('message')
-        estimated_distance = request.POST.get('estimated_distance')
-        vehicle_rate = request.POST.get('vehicle_rate')
-        estimated_cost = request.POST.get('estimated_cost')
-        
         try:
-            service = Service.objects.get(id=service_id)
-        except Service.DoesNotExist:
-            messages.error(request, 'Invalid service selected.')
-            return redirect('booking')
+            service_id = request.POST.get('service')
+            name = request.POST.get('name')
+            phone = request.POST.get('phone')
+            email = request.POST.get('email')
+            pickup_location = request.POST.get('pickup_location')
+            destination = request.POST.get('destination')
+            date = request.POST.get('date')
+            time = request.POST.get('time')
+            message = request.POST.get('message')
+            estimated_distance = request.POST.get('estimated_distance')
+            vehicle_rate = request.POST.get('vehicle_rate')
+            estimated_cost = request.POST.get('estimated_cost')
+            
+            try:
+                service = Service.objects.get(id=service_id)
+            except Service.DoesNotExist:
+                messages.error(request, 'Invalid service selected.')
+                return redirect('booking')
         
         # Save booking to database
+        try:
+            est_distance = float(estimated_distance) if estimated_distance and estimated_distance.strip() else None
+        except (ValueError, AttributeError):
+            est_distance = None
+            
+        try:
+            v_rate = float(vehicle_rate) if vehicle_rate and vehicle_rate.strip() else None
+        except (ValueError, AttributeError):
+            v_rate = None
+            
+        try:
+            est_cost = float(estimated_cost) if estimated_cost and estimated_cost.strip() else None
+        except (ValueError, AttributeError):
+            est_cost = None
+        
         booking = Booking.objects.create(
             user=request.user if request.user.is_authenticated else None,
             service=service,
@@ -111,9 +127,9 @@ def booking(request):
             destination=destination,
             date=date,
             time=time,
-            estimated_distance=float(estimated_distance) if estimated_distance else None,
-            vehicle_rate=vehicle_rate if vehicle_rate else None,
-            estimated_cost=estimated_cost if estimated_cost else None,
+            estimated_distance=est_distance,
+            vehicle_rate=v_rate,
+            estimated_cost=est_cost,
             message=message
         )
         
@@ -196,6 +212,14 @@ Details: {message}"""
         
         # Redirect to WhatsApp
         return redirect(whatsapp_url)
+        
+        except Exception as e:
+            # Log the error and show a user-friendly message
+            import traceback
+            print(f"Booking error: {str(e)}")
+            print(traceback.format_exc())
+            messages.error(request, f'An error occurred while processing your booking: {str(e)}')
+            return redirect('booking')
     
     services = Service.objects.filter(is_active=True)
     return render(request, 'booking.html', {'services': services})
