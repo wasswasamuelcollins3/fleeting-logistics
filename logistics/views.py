@@ -78,9 +78,10 @@ def tracking(request):
     })
 
 def booking(request):
-    services = Service.objects.filter(is_active=True)
-    
-    if request.method == 'POST':
+    try:
+        services = Service.objects.filter(is_active=True)
+        
+        if request.method == 'POST':
         try:
             service_id = request.POST.get('service')
             name = request.POST.get('name')
@@ -220,9 +221,17 @@ Details: {message}"""
             print(traceback.format_exc())
             messages.error(request, f'An error occurred while processing your booking: {str(e)}')
             return redirect('booking')
+        
+        services = Service.objects.filter(is_active=True)
+        return render(request, 'booking.html', {'services': services})
     
-    services = Service.objects.filter(is_active=True)
-    return render(request, 'booking.html', {'services': services})
+    except Exception as e:
+        import traceback
+        print(f"Booking view error: {str(e)}")
+        print(traceback.format_exc())
+        # Return a simple error page or redirect to home
+        messages.error(request, 'An error occurred while loading the booking page. Please try again.')
+        return redirect('home')
 
 def register(request):
     if request.method == 'POST':
